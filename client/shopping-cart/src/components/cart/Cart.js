@@ -38,7 +38,7 @@ const Cart = (props) => {
                                     <th>Quantity</th>
                                     <th>Price</th>
                                     <th>Total</th>
-                                    <th>Edit</th>
+                                    {/* <th>Edit</th> */}
                                     <th>Delete</th>
                                 </tr>
                             </thead>
@@ -55,7 +55,7 @@ const Cart = (props) => {
                                         <td>2</td>
                                         <td>₹ 5,999</td>
                                         <td>₹ 11,998</td>
-                                        <td>📝</td>
+                                        {/* <td>📝</td> */}
                                         <td>🗑️</td>
                                     </tr>
                                 ))}

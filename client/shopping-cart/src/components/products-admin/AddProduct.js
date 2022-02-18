@@ -3,18 +3,59 @@ import Button from "../shared/Button";
 import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
+import FormHelperText from "../shared/FormHelperText";
+
+const initialValues = {
+    productName: '',
+    productDescription: '',
+    productPrice: '',
+    productQuantity: '',
+    productStatus: false,
+}
 
 const AddProduct = (props) => {
-    const [productName, setProductName] = useState("");
-    const [productDescription, setProductDescription] = useState("");
-    const [productPrice, setProductPrice] = useState("");
-    const [productQuantity, setProductQuantity] = useState("");
-    const [productStatus, setProductStatus] = useState(false);
 
+    const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState({});
+    const [hasErrors, setHasErrors] = useState(true);
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log(productDescription, productName, productPrice, productQuantity, productStatus)
+        console.log(values);
+    }
+
+    const validateForm = (field, value) => {
+        if(field === "productName" && value.length <= 7){
+            setHasErrors(true);
+            return "Product name must be greater than 7 characters"
+        }
+        if(field === "productDescription" && (value.length <= 12 || value.length > 40)){
+            setHasErrors(true);
+            return "Product description must be 12 to 40 characters long"
+        }
+        if(field === "productPrice" && parseFloat(value) <=0){
+            setHasErrors(true);
+            return "Product price must be greater than ₹0"
+        }
+        if(field === "productQuantity" && parseInt(value) <=0){
+            setHasErrors(true);
+            return "Product quantity must be greater than 0"
+        } else {
+            setHasErrors(false);
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        setValues({
+            ...values,
+            [name]: value,
+        });
+
+        setErrors({
+            ...errors,
+            [name]: validateForm(name, value),
+        });
     }
 
     return (
@@ -30,9 +71,10 @@ const AddProduct = (props) => {
                         <Input
                             placeholder="Please add product name"
                             name="productName"
-                            value={productName}
-                            handleChange={(e) => setProductName(e.target.value)}
+                            value={values.productName}
+                            handleChange={handleInputChange}
                         />
+                        <FormHelperText>{errors.productName}</FormHelperText>
                     </div>
 
                     <div className="form-group">
@@ -43,11 +85,10 @@ const AddProduct = (props) => {
                         <Input
                             placeholder="Please add product description"
                             name="productDescription"
-                            value={productDescription}
-                            handleChange={(e) =>
-                                setProductDescription(e.target.value)
-                            }
+                            value={values.productDescription}
+                            handleChange={handleInputChange}
                         />
+                        <FormHelperText>{errors.productDescription}</FormHelperText>
                     </div>
 
                     <div className="form-group">
@@ -59,11 +100,10 @@ const AddProduct = (props) => {
                             placeholder="Please add product price"
                             name="productPrice"
                             type="number"
-                            value={productPrice}
-                            handleChange={(e) =>
-                                setProductPrice(e.target.value)
-                            }
+                            value={values.productPrice}
+                            handleChange={handleInputChange}
                         />
+                        <FormHelperText>{errors.productPrice}</FormHelperText>
                     </div>
 
                     <div className="form-group">
@@ -75,11 +115,10 @@ const AddProduct = (props) => {
                             placeholder="Please add product quantity"
                             name="productQuantity"
                             type="number"
-                            value={productQuantity}
-                            handleChange={(e) =>
-                                setProductQuantity(e.target.value)
-                            }
+                            value={values.productQuantity}
+                            handleChange={handleInputChange}
                         />
+                        <FormHelperText>{errors.productQuantity}</FormHelperText>
                     </div>
 
                     <div className="form-group">
@@ -91,16 +130,19 @@ const AddProduct = (props) => {
                         <Input
                             name="productStatus"
                             type="checkbox"
-                            checked={productStatus}
+                            checked={values.productStatus}
                             handleChange={(e) => {
-                                setProductStatus((status) => !status);
+                                setValues({
+                                    ...values,
+                                    'productStatus': !values.productStatus
+                                })
                             }}
                             required={false}
                         />
                     </div>
 
                     <div className="form-group">
-                        <Button type="submit" color="warning">
+                        <Button type="submit" color="warning" disabled={hasErrors}>
                             <strong>Add Product</strong>
                         </Button>
                     </div>

@@ -3,16 +3,59 @@ import Button from "../shared/Button";
 import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
+import FormHelperText from "../shared/FormHelperText";
+
+const initialValues = {
+    email: '',
+    username: '',
+    password: '',
+    cnfPassword: '',
+}
+const emailRegExp = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const SignUp = (props) => {
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [cnfPassword, setCnfPassword] = useState('');
+
+    const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState({});
+    const [hasErrors, setHasErrors] = useState(true);
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log(email, username, password, cnfPassword);
+        console.log(values)
+    }
+
+    const validateForm = (field, value) => {
+        if(field === "email" && !emailRegExp.test(value.toLowerCase())){
+            setHasErrors(true);
+            return "Invalid email address";
+        }
+        if(field === "username" && value.length <= 5){
+            setHasErrors(true);
+            return "Username must contains more than 5 characters";
+        }
+        if(field === "password" && value.length <= 8){
+            setHasErrors(true);
+            return "Password must be greater than 8 characters";
+        }
+        if(field === "cnfPassword" && value != values.password){
+            setHasErrors(true);
+            return "Confirm Password does not match";
+        } else {
+            setHasErrors(false);
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        setValues({
+            ...values,
+            [name]: value
+        });
+
+        setErrors({
+            ...errors,
+            [name]: validateForm(name, value),
+        });
     }
 
     return (
@@ -30,9 +73,10 @@ const SignUp = (props) => {
                                     placeholder="Please enter email address"
                                     type="email"
                                     name="email"
-                                    value={email}
-                                    handleChange={(e) => setEmail(e.target.value)}                                
+                                    value={values.email}
+                                    handleChange={handleInputChange}
                                 />
+                                <FormHelperText>{errors.email}</FormHelperText>
                             </div>
 
                             <div className="form-group">
@@ -42,10 +86,11 @@ const SignUp = (props) => {
                                 />
                                 <Input
                                     placeholder="Please enter username"
-                                    type="text"
-                                    value={username}
-                                    handleChange={(e) => setUsername(e.target.value)}
+                                    name="username"
+                                    value={values.username}
+                                    handleChange={handleInputChange}
                                 />
+                                <FormHelperText>{errors.username}</FormHelperText>
                             </div>
 
                             <div className="form-group">
@@ -56,9 +101,11 @@ const SignUp = (props) => {
                                 <Input
                                     placeholder="Please enter password"
                                     type="password"
-                                    value={password}
-                                    handleChange={(e) => setPassword(e.target.value)}
+                                    name="password"
+                                    value={values.password}
+                                    handleChange={handleInputChange}
                                 />
+                                <FormHelperText>{errors.password}</FormHelperText>
                             </div>
 
                             <div className="form-group">
@@ -68,14 +115,16 @@ const SignUp = (props) => {
                                 />
                                 <Input
                                     placeholder="Please enter password"
-                                    type="cnfPassword"
-                                    value={cnfPassword}
-                                    handleChange={(e) => setCnfPassword(e.target.value)}
+                                    type="password"
+                                    name="cnfPassword"
+                                    value={values.cnfPassword}
+                                    handleChange={handleInputChange}
                                 />
+                                <FormHelperText>{errors.cnfPassword}</FormHelperText>
                             </div>
 
                             <div className="form-group">
-                                <Button type="submit" color="success">Sign Up</Button>
+                                <Button type="submit" color="success" disabled={hasErrors}>Sign Up</Button>
                             </div>
 
                             <div className="form-group">

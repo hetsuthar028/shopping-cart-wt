@@ -3,15 +3,47 @@ import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import Button from "../shared/Button";
+import FormHelperText from "../shared/FormHelperText";
+
+const initialValues = {
+    username: "",
+    password: "",
+}
 
 const Login = (props) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [values, setValues] = useState(initialValues);
+    const [hasErrors, setHasErrors] = useState(true);
+    const [errors, setErrors] = useState({});
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log(username, password);
+        console.log(values);
     };
+
+    const validateForm = (field, value) => {
+        if(field === 'username' && value.length <= 5){
+            setHasErrors(true);
+            return "Username must contains more than 5 characters"
+        }
+        if(field === 'password' && value.length <= 8){
+            setHasErrors(true);
+            return "Password must be greater than 8 characters"
+        } else {
+            setHasErrors(false);
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        setValues({
+            ...values,
+            [name]: value
+        });
+        setErrors({
+            ...errors,
+            [name]: validateForm(name, value),
+        });
+    }
 
     return (
         <div>
@@ -27,11 +59,10 @@ const Login = (props) => {
                                 <Input
                                     placeholder="Please enter username"
                                     name="username"
-                                    value={username}
-                                    handleChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
+                                    value={values.username}
+                                    handleChange={handleInputChange}
                                 />
+                                <FormHelperText>{errors.username}</FormHelperText>
                             </div>
                             <div className="form-group">
                                 <Formlabel
@@ -42,14 +73,13 @@ const Login = (props) => {
                                     placeholder="Please enter password"
                                     type="password"
                                     name="password"
-                                    value={password}
-                                    handleChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
+                                    value={values.password}
+                                    handleChange={handleInputChange}
                                 />
+                                <FormHelperText>{errors.password}</FormHelperText>
                             </div>
                             <div className="form-group">
-                                <Button color="success">Login</Button>
+                                <Button color="success" disabled={hasErrors}>Login</Button>
                             </div>
                             <div className="form-group">
                                 <p>
