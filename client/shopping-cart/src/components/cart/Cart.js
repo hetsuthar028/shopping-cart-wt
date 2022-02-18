@@ -1,6 +1,8 @@
 import React from "react";
 import Button from "../shared/Button";
 import dummyImage from "../../static/backiee-181542.jpg";
+import Input from "../shared/Input";
+import Formlabel from "../shared/FormLabel";
 
 const Cart = (props) => {
     return (
@@ -64,9 +66,45 @@ const Cart = (props) => {
                     </div>
                     <div className="total-section">
                         <div className="row">
-                            <div className="col-md-6" style={{display: "flex", "justifyContent": 'center', alignItems: "center"}}>
-                                {/* <Button color="warning"><strong>Place Order</strong></Button> */}
+                            <div className="col-md-6">
+                                <form>
+                                    <div className="row">
+                                        <div className="col-md-6 m-auto">
+                                            <div className="form-group">
+                                                <Formlabel
+                                                    htmlFor="address"
+                                                    label="Delivery Address:"
+                                                />
+                                                <Input
+                                                    name="address"
+                                                    placeholder="Please enter your address"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 m-auto">
+                                            <div className="form-group">
+                                                <Formlabel
+                                                    htmlFor="contact"
+                                                    label="Contact Number:"
+                                                />
+                                                <Input
+                                                    name="contact"
+                                                    type="number"
+                                                    placeholder="Please enter your contact number"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row my-2">
+                                        <div className="form-group">
+                                            <Button color="warning">
+                                                <strong>Place Order</strong>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
+
                             <div className="col-md-3 text-end">
                                 <h5>Order Amount:</h5>
                                 <h5>Sales Tax:</h5>
@@ -78,9 +116,7 @@ const Cart = (props) => {
                                 <h5>₹ 127.8</h5>
                                 <h5>₹ 250</h5>
                                 <h3 className="text-success">₹ 5,10,724.8</h3>
-                                <Button color="warning"><strong>Place Order</strong></Button>
                             </div>
-                            
                         </div>
                     </div>
                 </div>

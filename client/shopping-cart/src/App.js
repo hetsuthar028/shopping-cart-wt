@@ -10,6 +10,8 @@ import SignUp from './components/auth/SignUp';
 import Home from './components/home/Home';
 import Cart from './components/cart/Cart';
 import AddProduct from './components/products-admin/AddProduct';
+import Productlist from './components/products-admin/ProductList';
+import AllUsers from './components/all-users-admin/AllUsers';
 
 function App() {
   return (
@@ -21,7 +23,9 @@ function App() {
 
       {/* <Home /> */}
       {/* <Cart /> */}
-      <AddProduct />
+      {/* <AddProduct /> */}
+      {/* <Productlist /> */}
+      <AllUsers />
 
       {/* <Card>
         This is something

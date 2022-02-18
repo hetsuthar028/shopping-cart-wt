@@ -29,9 +29,9 @@ const AddProduct = (props) => {
             setHasErrors(true);
             return "Product name must be greater than 7 characters"
         }
-        if(field === "productDescription" && (value.length <= 12 || value.length > 40)){
+        if(field === "productDescription" && value.length > 40){
             setHasErrors(true);
-            return "Product description must be 12 to 40 characters long"
+            return "Product description must be less than 40 characters"
         }
         if(field === "productPrice" && parseFloat(value) <=0){
             setHasErrors(true);
@@ -87,6 +87,7 @@ const AddProduct = (props) => {
                             name="productDescription"
                             value={values.productDescription}
                             handleChange={handleInputChange}
+                            required={false}
                         />
                         <FormHelperText>{errors.productDescription}</FormHelperText>
                     </div>

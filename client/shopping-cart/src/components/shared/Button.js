@@ -5,7 +5,7 @@ const Button = (props) => {
     return (
         <button
             type={type}
-            className={`btn btn-${color} m-2`}
+            className={`btn btn-${color}`}
             onClick={handleClick}
             disabled={disabled}
         >
