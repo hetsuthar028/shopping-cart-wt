@@ -9,6 +9,7 @@ import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import Home from './components/home/Home';
 import Cart from './components/cart/Cart';
+import AddProduct from './components/products-admin/AddProduct';
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
       {/* <SignUp /> */}
 
       {/* <Home /> */}
-      <Cart />
+      {/* <Cart /> */}
+      <AddProduct />
 
       {/* <Card>
         This is something
