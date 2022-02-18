@@ -15,7 +15,7 @@ const Login = (props) => {
 
     return (
         <div>
-            <div className="row">
+            <div className="row m-0">
                 <div className="col-md-5 m-auto">
                     <form method="POST" onSubmit={handleFormSubmit}>
                         <Card>

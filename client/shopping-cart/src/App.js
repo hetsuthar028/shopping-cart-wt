@@ -7,6 +7,7 @@ import Formlabel from './components/shared/FormLabel';
 import Button from './components/shared/Button';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
+import Home from './components/home/Home';
 
 function App() {
   return (
@@ -14,7 +15,9 @@ function App() {
       <Navbar />
 
       {/* <Login /> */}
-      <SignUp />
+      {/* <SignUp /> */}
+
+      <Home />
 
 
       {/* <Card>
