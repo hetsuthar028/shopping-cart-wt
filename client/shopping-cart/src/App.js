@@ -8,6 +8,7 @@ import Button from './components/shared/Button';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import Home from './components/home/Home';
+import Cart from './components/cart/Cart';
 
 function App() {
   return (
@@ -17,8 +18,8 @@ function App() {
       {/* <Login /> */}
       {/* <SignUp /> */}
 
-      <Home />
-
+      {/* <Home /> */}
+      <Cart />
 
       {/* <Card>
         This is something
