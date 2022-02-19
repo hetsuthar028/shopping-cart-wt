@@ -8,18 +8,13 @@ const myMiddleware = require('../middlewares/index');
 // Controllers
 const userController = require('../user/controller/user.controller');
 
-userRouter.get('/', (req, res) => {
-    console.log("Got user home request");
-    res.send({message: "Hello"});
-});
-
 userRouter.post('/auth/login', userController.authLogin);
 
 userRouter.post('/auth/signup', userController.authSignUp);
 
 userRouter.get('/auth/verify/', userController.authVerify);
 
-userRouter.get('/get/id/:email', myMiddleware.isLoggedIn, userController.getUseByEmail);
+userRouter.get('/get/id/:email', userController.getUseByEmail);
 
 userRouter.get('/get/all', myMiddleware.isLoggedIn, myMiddleware.isAdmin, userController.getAllUser);
 

@@ -26,21 +26,21 @@ exports.authSignUp = (req, res) => {
                     newUser
                         .save()
                         .then((userSave) => {
-                            return res.send({
+                            return res.status(201).send({
                                 success: true,
                                 message: "User created successfully!",
                             });
                         })
                         .catch((userSaveErr) => {
                             console.log(userSaveErr);
-                            return res.send({
+                            return res.status(500).send({
                                 success: false,
                                 message: "Please try again",
                             });
                         });
                 } else {
                     console.log("User already exists");
-                    return res.send({
+                    return res,status(409).send({
                         success: false,
                         message: "User already exists!",
                     });
@@ -48,10 +48,10 @@ exports.authSignUp = (req, res) => {
             })
             .catch((err) => {
                 console.log("User does not exists 2");
-                return res.send({ success: false, message: "Invalid data" });
+                return res.status(400).send({ success: false, message: "Invalid data" });
             });
     } else {
-        return res.send({ success: false, message: "Invalid data" });
+        return res.status(400).send({ success: false, message: "Invalid data" });
     }
 };
 
@@ -77,9 +77,9 @@ exports.authLogin = (req, res) => {
                         }
                     );
 
-                    return res.send({ success: true, token: userToken });
+                    return res.status(200).send({ success: true, token: userToken });
                 } else {
-                    return res.send({
+                    return res.status(401).send({
                         success: false,
                         message: "Invalid credentials",
                     });
@@ -87,43 +87,43 @@ exports.authLogin = (req, res) => {
             })
             .catch((err) => {
                 console.log("Error in fetching user @authLogin", err);
-                return res.send({
+                return res.status(500).send({
                     success: false,
                     message: "Invalid credentials",
                 });
             });
     } else {
-        return res.send({ success: false, message: "Invalid data" });
+        return res.status(400).send({ success: false, message: "Invalid data" });
     }
 };
 
 exports.authVerify = (req, res) => {
     try {
         jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-        return res.send({ success: true, message: "verified" });
+        return res.status(200).send({ success: true, message: "verified" });
     } catch (e) {
         console.log("Invalid")
-        return res.send({ success: false, message: "not verified" });
+        return res.status(401).send({ success: false, message: "not verified" });
     }
 };
 
 exports.getUseByEmail = (req, res) => {
     UserSchema.findOne({ email: req.params.email })
         .then((findResult) => {
-            return res.send({ success: true, user: findResult });
+            return res.status(200).send({ success: true, user: findResult });
         })
         .catch((err) => {
-            return res.send({ success: false });
+            return res.status(400).send({ success: false });
         });
 };
 
 exports.getAllUser = (req, res) => {
     UserSchema.find({})
         .then((findResult) => {
-            return res.send({success: true, users: findResult});
+            return res.status(200).send({success: true, users: findResult});
         })
         .catch((err) => {
-            return res.send({success: false});
+            return res.status(400).send({success: false});
         })
 }
 
@@ -131,12 +131,12 @@ exports.updateUser = (req, res) => {
     if(req.params.email && Object.keys(req.body).length){
         UserSchema.updateOne({email: req.params.email}, {$set: req.body})
             .then((updateResult) => {
-                return res.send({success: true, result: updateResult});
+                return res.status(200).send({success: true, result: updateResult});
             }).catch((updateError) => {
-                return res.send({success: false, message: "Please try again!"});
+                return res.status(400).send({success: false, message: "Please try again!"});
             })
     } else {
-        return res.send({success: false, message: "Invalid data"});
+        return res.status(400).send({success: false, message: "Invalid data"});
     }
 }
 
@@ -144,12 +144,12 @@ exports.deleteUser = (req, res) => {
     if(req.params.email){
         UserSchema.deleteOne({email: req.params.email})
             .then((deleteResult) => {
-                return res.send({success: true, result: deleteResult});
+                return res.status(200).send({success: true, result: deleteResult});
             })
             .catch((deleteErr) => {
-                return res.send({success: false, message: "Please try again!"});
+                return res.status(400).send({success: false, message: "Please try again!"});
             })
     } else {
-        return res.send({success: false, message: "Invalid data"});
+        return res.status(400).send({success: false, message: "Invalid data"});
     }
 }
