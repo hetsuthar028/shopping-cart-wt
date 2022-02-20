@@ -4,6 +4,7 @@ import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import FormHelperText from "../shared/FormHelperText";
+import axios from "axios";
 
 const initialValues = {
     productName: '',
@@ -22,7 +23,20 @@ const AddProduct = (props) => {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         console.log(values);
-    }
+        axios.post("http://localhost:8080/product/add/",{
+            ...values
+        }, {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((addResponse) => {
+            console.log(addResponse.data);
+        })
+        .catch((addErr) => {
+            console.log(addErr.response.data);
+        })
+    } 
 
     const validateForm = (field, value) => {
         if(field === "productName" && value.length <= 7){
@@ -60,6 +74,7 @@ const AddProduct = (props) => {
 
     return (
         <div>
+            <div className="col-md-5 m-auto">
             <form method="POST" onSubmit={handleFormSubmit}>
                 <Card>
                     <h3 className="my-2">Add New Product</h3>
@@ -149,6 +164,7 @@ const AddProduct = (props) => {
                     </div>
                 </Card>
             </form>
+            </div>
         </div>
     );
 };

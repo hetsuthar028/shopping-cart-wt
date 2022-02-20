@@ -3,8 +3,10 @@ import Card from "../shared/Card";
 import dummyImage from "../../static/backiee-181542.jpg";
 import Button from "../shared/Button";
 
-const Productcard = () => {
-    return (
+const Productcard = (props) => {
+    const {_id, name, price, quantity,description, status} = props.product;
+
+    return props && (
         <div style={{display: 'inline-flex'}}>
             <Card style={{ minWidth: "300px", maxWidth: "300px", margin: "10px" }}>
                 <img
@@ -12,11 +14,10 @@ const Productcard = () => {
                     src={dummyImage}
                     style={{ maxHeight: "150px" }}
                 />
-                <h3 className="my-2">Amazon Alexa</h3>
-                <h5 className="text-success">Price: ₹5,999</h5>
+                <h3 className="my-2">{name}</h3>
+                <h5 className="text-success">Price: ₹{price}</h5>
                 <p style={{ textAlign: "justify", textJustify: "inter-word" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt...
+                    {description}
                 </p>
                 <Button color="warning">
                     <strong>Add to Cart</strong>

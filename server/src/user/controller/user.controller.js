@@ -40,7 +40,7 @@ exports.authSignUp = (req, res) => {
                         });
                 } else {
                     console.log("User already exists");
-                    return res,status(409).send({
+                    return res.status(409).send({
                         success: false,
                         message: "User already exists!",
                     });
@@ -57,7 +57,7 @@ exports.authSignUp = (req, res) => {
 
 exports.authLogin = (req, res) => {
     let { email, password } = req.body;
-
+    
     if (email && password) {
         axios
             .get(`http://localhost:8080/user/get/id/${email}`)
@@ -73,7 +73,7 @@ exports.authLogin = (req, res) => {
                         },
                         process.env.JWT_SECRET,
                         {
-                            expiresIn: 60*1
+                            expiresIn: 60*20
                         }
                     );
 

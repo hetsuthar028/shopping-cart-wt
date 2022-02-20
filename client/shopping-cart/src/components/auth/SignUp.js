@@ -4,6 +4,7 @@ import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import FormHelperText from "../shared/FormHelperText";
+import axios from "axios";
 
 const initialValues = {
     email: '',
@@ -22,6 +23,19 @@ const SignUp = (props) => {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         console.log(values)
+        axios.post('http://localhost:8080/user/auth/signup', {
+            "email": values.email,
+            "password": values.password,
+            "status": true,
+            "isAdmin": false,
+            "username": values.username
+        })
+        .then((signupResp) => {
+            console.log(signupResp.data.success);
+        })
+        .catch((err) => {
+            console.log(err.response.data.message);
+        })
     }
 
     const validateForm = (field, value) => {

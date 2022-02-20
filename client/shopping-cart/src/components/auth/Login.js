@@ -4,26 +4,48 @@ import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import Button from "../shared/Button";
 import FormHelperText from "../shared/FormHelperText";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const initialValues = {
-    username: "",
+    email: "",
     password: "",
 }
+
+const emailRegExp = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const Login = (props) => {
     const [values, setValues] = useState(initialValues);
     const [hasErrors, setHasErrors] = useState(true);
     const [errors, setErrors] = useState({});
 
+    const navigate = useNavigate();
+
     const handleFormSubmit = (e) => {
         e.preventDefault();
         console.log(values);
+        axios.post('http://localhost:8080/user/auth/login', {
+            "email": values.email,
+            "password": values.password
+        })
+        .then((loginResp) => {
+            console.log(loginResp.data.token)
+            
+            window.localStorage.setItem('bearer', loginResp.data.token);
+            return navigate('/home');
+        })
+        .catch((err) => {
+            
+            console.log(err.response.data);
+            // Show banner for any errors
+        })
+
     };
 
     const validateForm = (field, value) => {
-        if(field === 'username' && value.length <= 5){
+        if(field === 'email' && !emailRegExp.test(value.toLowerCase())){
             setHasErrors(true);
-            return "Username must contains more than 5 characters"
+            return "Invalid email address"
         }
         if(field === 'password' && value.length <= 8){
             setHasErrors(true);
@@ -53,16 +75,17 @@ const Login = (props) => {
                         <Card>
                             <div className="form-group">
                                 <Formlabel
-                                    label="Username:"
-                                    htmlFor="username"
+                                    label="Email:"
+                                    htmlFor="email"
                                 />
                                 <Input
-                                    placeholder="Please enter username"
-                                    name="username"
-                                    value={values.username}
+                                    placeholder="Please enter email address"
+                                    name="email"
+                                    type="email"
+                                    value={values.email}
                                     handleChange={handleInputChange}
                                 />
-                                <FormHelperText>{errors.username}</FormHelperText>
+                                <FormHelperText>{errors.email}</FormHelperText>
                             </div>
                             <div className="form-group">
                                 <Formlabel

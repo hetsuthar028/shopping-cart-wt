@@ -1,8 +1,27 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import Productcard from '../product-card/ProductCard';
 import SearchBar from '../search-bar/SearchBar';
 
 const Home = () => {
+
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/product/get/all", {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((response) => {
+            console.log(response.data);
+            setProducts(response.data.products);
+        })
+        .catch((err) => {
+            console.log(err.response.data)
+        });
+    }, []);
+
     return (
         <div>
             <div className='row m-0 p-2'>
@@ -11,8 +30,8 @@ const Home = () => {
                         <SearchBar />
                     </div>
                     <div className='card-list'>
-                        {[1, 2, 3, 4, 5, 6].map((item) => (
-                            <Productcard />
+                        {products.map((item) => (
+                            <Productcard product={item} key={item._id}/>
                         ))}
                     </div>
                 </div>

@@ -1,8 +1,27 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
 
 const AllUsers = () => {
+
+    const [allUsers, setAllUsers] = useState([]);
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/user/get/all", {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((getResponse) => {
+            setAllUsers(getResponse.data.users);
+            console.log(getResponse.data);
+        })
+        .catch((err) => {
+            console.log(err.response.data);
+        })
+    }, []);
+
     return (
         <div>
             <div className="row m-0">
@@ -20,21 +39,24 @@ const AllUsers = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>@hetsuthar028</td>
-                                <td>hetmewada028@gmail.com</td>
-                                <td>************</td>
-                                <td>
-                                    <Input type="checkbox" />
-                                </td>
-                                <td>No</td>
-                                <td>
-                                    <Button color="success">✏️</Button>
-                                </td>
-                                <td>
-                                    <Button color="warning">❌</Button>
-                                </td>
-                            </tr>
+                            
+                            {allUsers.map((user, idx) => (
+                                <tr key={idx}>
+                                    <td>@{user.username}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.password}</td>
+                                    <td>
+                                        <Input type="checkbox" checked={user.status} />
+                                    </td>
+                                    <td>{user.isAdmin ? "YES": "NO"}</td>
+                                    <td>
+                                        <Button color="success">✏️</Button>
+                                    </td>
+                                    <td>
+                                        <Button color="warning">❌</Button>
+                                    </td>
+                                </tr>
+                            ))}
                             <tr>
                                 <td>@hetsuthar028</td>
                                 <td>hetmewada028@gmail.com</td>
@@ -52,23 +74,6 @@ const AllUsers = () => {
                                     <Button color="warning">❌</Button>
                                 </td>
                             </tr>
-                            {[1, 2, 3, 4].map((item, idx) => (
-                                <tr key={idx}>
-                                    <td>@hetsuthar028</td>
-                                    <td>hetmewada028@gmail.com</td>
-                                    <td>************</td>
-                                    <td>
-                                        <Input type="checkbox" />
-                                    </td>
-                                    <td>No</td>
-                                    <td>
-                                        <Button color="success">✏️</Button>
-                                    </td>
-                                    <td>
-                                        <Button color="warning">❌</Button>
-                                    </td>
-                                </tr>
-                            ))}
                         </tbody>
                     </table>
                 </div>
