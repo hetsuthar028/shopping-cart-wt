@@ -5,7 +5,7 @@ import Input from "../shared/Input";
 import Button from "../shared/Button";
 import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialValues = {
     email: "",
@@ -107,7 +107,7 @@ const Login = (props) => {
                             <div className="form-group">
                                 <p>
                                     Don't have an account?{" "}
-                                    <a href="">Sign Up</a>
+                                    <Link to="/auth/signup">Sign Up</Link>
                                 </p>
                             </div>
                         </Card>

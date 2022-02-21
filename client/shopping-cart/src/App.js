@@ -11,7 +11,7 @@ import Home from './components/home/Home';
 import Cart from './components/cart/Cart';
 import AddProduct from './components/products-admin/AddProduct';
 import Productlist from './components/products-admin/ProductList';
-import AllUsers from './components/all-users-admin/AllUsers';
+import AdminUsers from './components/admin/AdminUsers';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRouter from './routes/AppRouter';
 

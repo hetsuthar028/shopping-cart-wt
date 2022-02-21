@@ -8,6 +8,8 @@ import AdminProducts from '../components/admin/AdminProducts';
 import AddProduct from '../components/products-admin/AddProduct';
 import Productlist from '../components/products-admin/ProductList';
 import Home from '../components/home/Home';
+import AdminUsers from '../components/admin/AdminUsers';
+import UsersList from '../components/users/UsersList';
 
 const AppRouter = () => {
     return (
@@ -20,6 +22,10 @@ const AppRouter = () => {
             <Route path="/admin/products" element={<AdminProducts />}>
                 <Route path="add" element={<AddProduct />} />
                 <Route index element={<Productlist />} />
+            </Route>
+            <Route path='/admin/users' element={<AdminUsers />}>
+                <Route path='add' element={<SignUp />} />
+                <Route index element={<UsersList />} />
             </Route>
 
         </Routes>

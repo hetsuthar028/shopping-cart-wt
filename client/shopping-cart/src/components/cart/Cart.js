@@ -9,10 +9,9 @@ const Cart = (props) => {
 
     const [cartItems, setCartItems] = useState([]);
 
-    useEffect(() => {
-
+    const loadCartItems = () => {
+        
         // Change the userId once user state is ready to use
-
         axios.get("http://localhost:8080/cart/get/items/6210b114631fc0960e94bac8", {
             headers: {
                 authorization: window.localStorage.getItem('bearer'),
@@ -40,6 +39,10 @@ const Cart = (props) => {
         .catch((err) => {
             console.log(err.response.data);
         })
+    }
+
+    useEffect(() => {
+        loadCartItems();
     },[]);
 
     const getOrderAmount = () => {
@@ -51,6 +54,24 @@ const Cart = (props) => {
 
     const getTotalAmount = () => {
         return getOrderAmount() + 127.8 + 250
+    }
+    
+    const handleCartDelete = (cartItemId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this item from your cart?");
+        if(confirmDelete){
+            axios.delete(`http://localhost:8080/cart/delete/item/${cartItemId}`, {
+                headers: {
+                    authorization: window.localStorage.getItem('bearer'),
+                }
+            })
+            .then((deleteResp) => {
+                console.log(deleteResp.data);
+                loadCartItems();
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
+        }
     }
 
     
@@ -107,7 +128,7 @@ const Cart = (props) => {
                                         <td>₹ {item.product.price}</td>
                                         {/* <td>₹ 11,998</td> */}
                                         {/* <td>📝</td> */}
-                                        <td>🗑️</td>
+                                        <td><Button color="danger" handleClick={() => handleCartDelete(item._id)}>🗑️</Button></td>
                                     </tr>
                                 ))}
                             </tbody>

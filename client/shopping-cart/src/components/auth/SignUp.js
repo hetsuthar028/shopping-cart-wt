@@ -5,6 +5,7 @@ import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialValues = {
     email: '',
@@ -20,6 +21,8 @@ const SignUp = (props) => {
     const [errors, setErrors] = useState({});
     const [hasErrors, setHasErrors] = useState(true);
 
+    const navigate = useNavigate();
+
     const handleFormSubmit = (e) => {
         e.preventDefault();
         console.log(values)
@@ -32,6 +35,7 @@ const SignUp = (props) => {
         })
         .then((signupResp) => {
             console.log(signupResp.data.success);
+            return navigate('/auth/login');
         })
         .catch((err) => {
             console.log(err.response.data.message);
@@ -144,7 +148,7 @@ const SignUp = (props) => {
                             <div className="form-group">
                                 <p>
                                     Already have an account?{" "}
-                                    <a href="#">Login here</a>
+                                    <Link to="/auth/login">Login here</Link>
                                 </p>
                             </div>
                         </Card>
