@@ -14,9 +14,12 @@ import Productlist from './components/products-admin/ProductList';
 import AdminUsers from './components/admin/AdminUsers';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRouter from './routes/AppRouter';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 function App() {
   return (
+    <Provider store={store}>
     <Router>
     <div className="App">
       <Navbar />
@@ -48,6 +51,7 @@ function App() {
       </Button> */}
     </div>
     </Router>
+    </Provider>
   );
 }
 

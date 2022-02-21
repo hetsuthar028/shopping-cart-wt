@@ -48,21 +48,25 @@ exports.authSignUp = (req, res) => {
             })
             .catch((err) => {
                 console.log("User does not exists 2");
-                return res.status(400).send({ success: false, message: "Invalid data" });
+                return res
+                    .status(400)
+                    .send({ success: false, message: "Invalid data" });
             });
     } else {
-        return res.status(400).send({ success: false, message: "Invalid data" });
+        return res
+            .status(400)
+            .send({ success: false, message: "Invalid data" });
     }
 };
 
 exports.authLogin = (req, res) => {
     let { email, password } = req.body;
-    
+
     if (email && password) {
         axios
             .get(`http://localhost:8080/user/get/id/${email}`)
             .then((userResult) => {
-                console.log(userResult.data.user?.password)
+                console.log(userResult.data.user?.password);
                 if (password === userResult.data.user?.password) {
                     let user = userResult.data.user;
                     let userToken = jwt.sign(
@@ -73,11 +77,13 @@ exports.authLogin = (req, res) => {
                         },
                         process.env.JWT_SECRET,
                         {
-                            expiresIn: 60*20
+                            expiresIn: 60 * 20,
                         }
                     );
 
-                    return res.status(200).send({ success: true, token: userToken });
+                    return res
+                        .status(200)
+                        .send({ success: true, token: userToken });
                 } else {
                     return res.status(401).send({
                         success: false,
@@ -93,7 +99,9 @@ exports.authLogin = (req, res) => {
                 });
             });
     } else {
-        return res.status(400).send({ success: false, message: "Invalid data" });
+        return res
+            .status(400)
+            .send({ success: false, message: "Invalid data" });
     }
 };
 
@@ -102,12 +110,15 @@ exports.authVerify = (req, res) => {
         jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
         return res.status(200).send({ success: true, message: "verified" });
     } catch (e) {
-        console.log("Invalid")
-        return res.status(401).send({ success: false, message: "not verified" });
+        console.log("Invalid");
+        return res
+            .status(401)
+            .send({ success: false, message: "not verified" });
     }
 };
 
 exports.getUseByEmail = (req, res) => {
+
     UserSchema.findOne({ email: req.params.email })
         .then((findResult) => {
             return res.status(200).send({ success: true, user: findResult });
@@ -120,36 +131,68 @@ exports.getUseByEmail = (req, res) => {
 exports.getAllUser = (req, res) => {
     UserSchema.find({})
         .then((findResult) => {
-            return res.status(200).send({success: true, users: findResult});
+            return res.status(200).send({ success: true, users: findResult });
         })
         .catch((err) => {
-            return res.status(400).send({success: false});
-        })
-}
+            return res.status(400).send({ success: false });
+        });
+};
 
 exports.updateUser = (req, res) => {
-    if(req.params.email && Object.keys(req.body).length){
-        UserSchema.updateOne({email: req.params.email}, {$set: req.body})
+    if (req.params.email && Object.keys(req.body).length) {
+        UserSchema.updateOne({ email: req.params.email }, { $set: req.body })
             .then((updateResult) => {
-                return res.status(200).send({success: true, result: updateResult});
-            }).catch((updateError) => {
-                return res.status(400).send({success: false, message: "Please try again!"});
+                return res
+                    .status(200)
+                    .send({ success: true, result: updateResult });
             })
+            .catch((updateError) => {
+                return res
+                    .status(400)
+                    .send({ success: false, message: "Please try again!" });
+            });
     } else {
-        return res.status(400).send({success: false, message: "Invalid data"});
+        return res
+            .status(400)
+            .send({ success: false, message: "Invalid data" });
     }
-}
+};
 
 exports.deleteUser = (req, res) => {
-    if(req.params.email){
-        UserSchema.deleteOne({email: req.params.email})
+    if (req.params.email) {
+        UserSchema.deleteOne({ email: req.params.email })
             .then((deleteResult) => {
-                return res.status(200).send({success: true, result: deleteResult});
+                return res
+                    .status(200)
+                    .send({ success: true, result: deleteResult });
             })
             .catch((deleteErr) => {
-                return res.status(400).send({success: false, message: "Please try again!"});
-            })
+                return res
+                    .status(400)
+                    .send({ success: false, message: "Please try again!" });
+            });
     } else {
-        return res.status(400).send({success: false, message: "Invalid data"});
+        return res
+            .status(400)
+            .send({ success: false, message: "Invalid data" });
     }
-}
+};
+
+exports.getCurrentUser = (req, res) => {
+    let userToken = req.headers.authorization;
+    let decodedData = jwt.decode(userToken);
+    axios
+        .get(`http://localhost:8080/user/get/id/${decodedData.email}`, {
+            headers: {
+                authorization: userToken,
+            },
+        })
+        .then((userResp) => {
+            return res.status(200).send({ success: true, user: userResp.data.user });
+        })
+        .catch((err) => {
+            return res
+                .status(400)
+                .send({ success: false, message: "Please try again! 2" });
+        });
+};

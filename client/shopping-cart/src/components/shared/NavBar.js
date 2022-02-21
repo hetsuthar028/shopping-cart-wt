@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import fetchUser from "../../redux/user/userActions";
 
 const Navbar = () => {
+    const currentState = useSelector((state) => state);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchUser());
+    }, []);
+
+    console.log("INSIDE NAV", currentState);
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
@@ -23,25 +35,66 @@ const Navbar = () => {
                     id="navbarNav"
                 >
                     <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <a className="nav-link active">Cart</a>
-                        </li>
+                        {currentState.error?.message ? (
+                            <>
+                                <li className="nav-item">
+                                    <Link
+                                        to="/auth/login"
+                                        className="nav-link active"
+                                    >
+                                        Login
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link
+                                        to="/auth/signup"
+                                        className="nav-link active"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li className="nav-item">
+                                    <Link
+                                        to="/my/cart"
+                                        className="nav-link active"
+                                    >
+                                        My Cart
+                                    </Link>
+                                </li>
 
-                        <li className="nav-item">
-                            <a className="nav-link active">Products</a>
-                        </li>
+                                {/* <li className="nav-item">
+                                    <Link to="/" className="nav-link active">My Orders</Link>
+                                </li> */}
 
-                        <li className="nav-item">
-                            <a className="nav-link active">Users</a>
-                        </li>
+                                {currentState.user.isAdmin && (
+                                    <>
+                                        <li className="nav-item">
+                                            <Link to="/admin/products" className="nav-link active">
+                                                Products
+                                            </Link>
+                                        </li>
 
-                        <li className="nav-item">
-                            <a className="nav-link active">MR Inward</a>
-                        </li>
+                                        <li className="nav-item">
+                                            <Link to="/admin/users" className="nav-link active">
+                                                Users
+                                            </Link>
+                                        </li>
 
-                        <li className="nav-item">
-                            <a className="nav-link active">Logout</a>
-                        </li>
+                                        <li className="nav-item">
+                                            <a className="nav-link active">
+                                                MR Inward
+                                            </a>
+                                        </li>
+                                    </>
+                                )}
+                                <li className="nav-item">
+                                    <Link to="/auth/login" className="nav-link active">Logout</Link>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
@@ -6,6 +6,8 @@ import Button from "../shared/Button";
 import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import fetchUser from "../../redux/user/userActions";
 
 const initialValues = {
     email: "",
@@ -20,6 +22,11 @@ const Login = (props) => {
     const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        return window.localStorage.clear('bearer');
+    }, []);
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -32,6 +39,7 @@ const Login = (props) => {
             console.log(loginResp.data.token)
             
             window.localStorage.setItem('bearer', loginResp.data.token);
+            dispatch(fetchUser());
             return navigate('/home');
         })
         .catch((err) => {

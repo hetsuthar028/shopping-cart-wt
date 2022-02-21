@@ -12,33 +12,43 @@ const Cart = (props) => {
     const loadCartItems = () => {
         
         // Change the userId once user state is ready to use
-        axios.get("http://localhost:8080/cart/get/items/6210b114631fc0960e94bac8", {
+        axios.get('http://localhost:8080/user/get/currentuser', {
             headers: {
                 authorization: window.localStorage.getItem('bearer'),
             }
         })
-        .then((response) => {
-            let cartItems = response.data.cartItems
-            
-            cartItems.map((item, idx) => {
-                axios.get(`http://localhost:8080/product/get/id/${item.productId}`, {
-                    headers: {
-                        authorization: window.localStorage.getItem('bearer'),
-                    }
-                }).then((productResp) => {
-                    cartItems[idx]["product"] = productResp.data.product;
-                    if(idx === cartItems.length -1){
-                        setCartItems(cartItems)
-                    }
-                })
-                .catch((productErr) => {
-                    console.log("Product Err", productErr);
+        .then((currentUserResp) => {
+            let userId = currentUserResp.data.user._id
+            axios.get(`http://localhost:8080/cart/get/items/${userId}`, {
+                headers: {
+                    authorization: window.localStorage.getItem('bearer'),
+                }
+            })
+            .then((response) => {
+                let cartItems = response.data.cartItems
+                
+                cartItems.map((item, idx) => {
+                    axios.get(`http://localhost:8080/product/get/id/${item.productId}`, {
+                        headers: {
+                            authorization: window.localStorage.getItem('bearer'),
+                        }
+                    }).then((productResp) => {
+                        cartItems[idx]["product"] = productResp.data.product;
+                        if(idx === cartItems.length -1){
+                            setCartItems(cartItems)
+                        }
+                    })
+                    .catch((productErr) => {
+                        console.log("Product Err", productErr);
+                    })
                 })
             })
+            .catch((err) => {
+                console.log(err.response.data);
+            })
         })
-        .catch((err) => {
-            console.log(err.response.data);
-        })
+
+        
     }
 
     useEffect(() => {
