@@ -1,3 +1,4 @@
+const { default: axios } = require("axios");
 const OrderSchema = require("../model/order.model");
 
 exports.purchase = (req, res) => {
@@ -20,7 +21,20 @@ exports.purchase = (req, res) => {
 
         newOrder.save()
             .then((saveResult) => {
-                return res.send({success: true, result: saveResult, message: "Order successful!"});
+                console.log("AUTH HEADER", req.headers.authorization)
+                axios.delete(`http://localhost:8080/cart/emptycart/${userId}`, {
+                    headers: {
+                        authorization: req.headers.authorization,
+                    }
+                })
+                    .then((deleteResp) => {
+                        return res.send({success: true, result: saveResult, message: "Order successful!"});
+                    })
+                    .catch((deleteErr) => {
+                        console.log(deleteErr.response.data);
+                        return res.status(400).send({success: false, message: "Some error occured!"});
+                    })
+                
             })
             .catch((saveErr) => {
                 return res.send({success: false, message: "Please try again!"});

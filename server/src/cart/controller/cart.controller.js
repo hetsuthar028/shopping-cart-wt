@@ -62,3 +62,18 @@ exports.deleteItemById = (req, res) => {
         return res.send({ success: false, message: "Invalid data" });
     }
 };
+
+exports.emptyCart = (req, res) => {
+    let userId = req.params.userId;
+    if(userId){
+        CartSchema.deleteMany({"userId": userId})
+            .then((deleteResp) => {
+                return res.status(200).send({success: true, result: deleteResp});
+            })
+            .catch((err) => {
+                return res.status(500).send({success: false, message: "Please try again!"});
+            })
+    } else {
+        return res.status(400).send({success: false, message: "Invalid data"});
+    }
+}
