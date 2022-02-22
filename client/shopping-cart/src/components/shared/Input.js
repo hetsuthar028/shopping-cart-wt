@@ -10,11 +10,12 @@ const Input = (props) => {
         value,
         required = true,
         checked = false,
+        className
     } = props;
     return (
         <input
             type={type}
-            className={type==="radio" || type==="checkbox"  ? `form-${type} my-2`: 'form-control my-2'}
+            className={type==="radio" || type==="checkbox"  ? `form-${type} my-2 ` + className: 'form-control my-2 ' + className }
             placeholder={placeholder}
             name={name}
             id={id}

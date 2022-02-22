@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
+import { useDispatch } from "react-redux";
+import { showBanner } from '../../redux';
 
 const UsersList = () => {
     const [allUsers, setAllUsers] = useState([]);
     const [editIndex, setEditIndex] = useState(-1);
     const [editValues, setEditValues] = useState({});
+
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const loadUsers = () => {
         axios
@@ -18,10 +24,13 @@ const UsersList = () => {
             })
             .then((getResponse) => {
                 setAllUsers(getResponse.data.users);
-                console.log(getResponse.data);
             })
             .catch((err) => {
-                console.log(err.response.data);
+                dispatch(showBanner({apiErrorResponse: err.response.data.message}));
+                if(err.response.status === 403){
+                    return navigate('/home');
+                }
+                return navigate('/auth/login');
             });
     };
 

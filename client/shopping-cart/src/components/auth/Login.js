@@ -7,7 +7,7 @@ import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import fetchUser from "../../redux/user/userActions";
+import { clearUser, fetchUser, hideBanner, showBanner } from '../../redux';
 
 const initialValues = {
     email: "",
@@ -25,29 +25,25 @@ const Login = (props) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        return window.localStorage.clear('bearer');
+        window.localStorage.clear('bearer');
+        dispatch(clearUser())
     }, []);
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log(values);
         axios.post('http://localhost:8080/user/auth/login', {
             "email": values.email,
             "password": values.password
         })
-        .then((loginResp) => {
-            console.log(loginResp.data.token)
-            
+        .then((loginResp) => {            
             window.localStorage.setItem('bearer', loginResp.data.token);
+            dispatch(showBanner({apiSuccessResponse: 'Logged In successfully'}));
             dispatch(fetchUser());
             return navigate('/home');
         })
         .catch((err) => {
-            
-            console.log(err.response.data);
-            // Show banner for any errors
+            dispatch(showBanner({apiErrorResponse: err.response.data.message}));
         })
-
     };
 
     const validateForm = (field, value) => {

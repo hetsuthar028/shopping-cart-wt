@@ -6,6 +6,8 @@ import Input from "../shared/Input";
 import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { showBanner } from '../../redux';
 
 const initialValues = {
     email: '',
@@ -22,6 +24,7 @@ const SignUp = (props) => {
     const [hasErrors, setHasErrors] = useState(true);
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -35,9 +38,11 @@ const SignUp = (props) => {
         })
         .then((signupResp) => {
             console.log(signupResp.data.success);
+            dispatch(showBanner({apiSuccessResponse: "Account created successfully!"}));
             return navigate('/auth/login');
         })
         .catch((err) => {
+            dispatch(showBanner({apiErrorResponse: err.response.data.message}));
             console.log(err.response.data.message);
         })
     }

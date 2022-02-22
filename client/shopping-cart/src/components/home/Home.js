@@ -1,11 +1,16 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import Productcard from '../product-card/ProductCard';
 import SearchBar from '../search-bar/SearchBar';
+import { showBanner } from '../../redux';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
 
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         axios.get("http://localhost:8080/product/get/all", {
@@ -18,7 +23,8 @@ const Home = () => {
             setProducts(response.data.products);
         })
         .catch((err) => {
-            console.log(err.response.data)
+            dispatch(showBanner({apiErrorResponse: err.response.data.message}));
+            return navigate('/auth/login');
         });
     }, []);
 

@@ -21,7 +21,7 @@ const fetchUserFailure = (error) => {
     }
 }
 
-const fetchUser = () => {
+export const fetchUser = () => {
     return (dispatch) => {
         dispatch(fetchUserRequest)
         axios.get('http://localhost:8080/user/get/currentuser', {
@@ -39,10 +39,8 @@ const fetchUser = () => {
     }
 }
 
-const clearUser = () => {
+export const clearUser = () => {
     return {
         type: CLEAR_USER
     }
 }
-
-export default fetchUser;

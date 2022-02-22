@@ -10,7 +10,7 @@ const AdminUsers = () => {
         <div>
             <div className='row m-0 mt-3'>
                 <div className='col-md-12 m-auto'>
-                    <h2>Users</h2>
+                    <h2>Users 👤</h2>
                 </div>
             </div>
 

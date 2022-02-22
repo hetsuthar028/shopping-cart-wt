@@ -4,10 +4,16 @@ import dummyImage from "../../static/backiee-181542.jpg";
 import Input from "../shared/Input";
 import Formlabel from "../shared/FormLabel";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { showBanner } from '../../redux';
 
 const Cart = (props) => {
 
     const [cartItems, setCartItems] = useState([]);
+    
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const loadCartItems = () => {
         
@@ -40,12 +46,22 @@ const Cart = (props) => {
                     })
                     .catch((productErr) => {
                         console.log("Product Err", productErr);
+                        dispatch(showBanner({apiErrorResponse: productErr.response.data.message}));
+                        return navigate('/auth/login');
                     })
                 })
+
+                dispatch(showBanner({apiSuccessResponse: "Loading 🛒..."}));
             })
             .catch((err) => {
-                console.log(err.response.data);
+                console.log("Something")
+                dispatch(showBanner({apiErrorResponse: err.response.data.message}));
+                return navigate('/auth/login');
             })
+        })
+        .catch((currentUserErr) => {
+            dispatch(showBanner({apiErrorResponse: currentUserErr.response.data.message}));
+            return navigate('/auth/login');
         })
 
         
@@ -153,7 +169,7 @@ const Cart = (props) => {
                                             <div className="form-group">
                                                 <Formlabel
                                                     htmlFor="address"
-                                                    label="Delivery Address:"
+                                                    label="Billing Address:"
                                                 />
                                                 <Input
                                                     name="address"

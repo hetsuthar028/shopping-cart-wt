@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../shared/Button";
 import Card from "../shared/Card";
 import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { showBanner } from '../../redux';
 
 const initialValues = {
     productName: '',
@@ -19,6 +22,17 @@ const AddProduct = (props) => {
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
     const [hasErrors, setHasErrors] = useState(true);
+
+    const userState = useSelector((state) => state.user.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!userState.isAdmin){
+            dispatch(showBanner({apiErrorResponse: "Unauthorized user"}));
+            return navigate('/home');
+        }
+    }, []);
 
     const handleFormSubmit = (e) => {
         e.preventDefault();

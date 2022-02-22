@@ -188,6 +188,10 @@ exports.getCurrentUser = (req, res) => {
             },
         })
         .then((userResp) => {
+            console.log("USER", userResp.data)
+            if(userResp.data.user === null){
+                return res.status(400).send({success: false, message: "Invalid user"});
+            }
             return res.status(200).send({ success: true, user: userResp.data.user });
         })
         .catch((err) => {

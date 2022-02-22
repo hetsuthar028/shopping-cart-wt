@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import fetchUser from "../../redux/user/userActions";
+// import fetchUser from "../../redux/user/userActions";
+import { fetchUser } from '../../redux/';
 
 const Navbar = () => {
-    const currentState = useSelector((state) => state);
+    const currentState = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -16,9 +17,9 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">
+                <Link className="navbar-brand" to="/home">
                     Shopify
-                </a>
+                </Link>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -84,9 +85,9 @@ const Navbar = () => {
                                         </li>
 
                                         <li className="nav-item">
-                                            <a className="nav-link active">
+                                            <Link  to="/admin/mr" className="nav-link active">
                                                 MR Inward
-                                            </a>
+                                            </Link>
                                         </li>
                                     </>
                                 )}
