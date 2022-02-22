@@ -4,18 +4,19 @@ import Button from '../shared/Button';
 
 const SearchBar = (props) => {
 
-    const [searchBar, setSearchBar] = useState('');
-
+    const { searchFilter, setSearchFilter, performSearch } = props;
     return (
-        <div style={{display: 'inline-flex'}}>
-            <h5 style={{alignSelf: 'center', margin: "0 10px"}}>Search: </h5>
+        <div className='col-md-7 m-auto my-2'>
+        <div style={{display: "inline-flex"}} className="form-group">
+            {/* <h5 style={{alignSelf: 'center', margin: "0 10px"}}>Search: </h5> */}
             <Input 
                 placeholder="Search items"
                 name='searchbar'
-                value={searchBar}
-                handleChange={(e) => setSearchBar(e.target.value)}
+                value={searchFilter}
+                handleChange={(e) => setSearchFilter(e.target.value)}
             />
-            <Button>Search</Button>
+            <Button handleClick={performSearch}>Search</Button>
+        </div>
         </div>
     );
 }

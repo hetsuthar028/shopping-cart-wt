@@ -12,6 +12,9 @@ const Home = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [searchFilter, setSearchFilter] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+
     useEffect(() => {
         axios.get("http://localhost:8080/product/get/all", {
             headers: {
@@ -21,6 +24,7 @@ const Home = () => {
         .then((response) => {
             console.log(response.data);
             setProducts(response.data.products);
+            setFilteredProducts(response.data.products);
         })
         .catch((err) => {
             dispatch(showBanner({apiErrorResponse: err.response.data.message}));
@@ -28,15 +32,24 @@ const Home = () => {
         });
     }, []);
 
+    const performSearch = (e) => {
+        e.preventDefault();
+        setFilteredProducts(products.filter((product) => {
+            if(product.name.toLowerCase().indexOf(searchFilter.toLowerCase()) != -1){
+                return true
+            }
+        }))
+    }
+
     return (
         <div>
             <div className='row m-0 p-2'>
                 <div className='col-md-12 m-auto'>
                     <div className='search-bar'>
-                        <SearchBar />
+                        <SearchBar searchFilter={searchFilter} setSearchFilter={setSearchFilter} performSearch={performSearch} />
                     </div>
                     <div className='card-list'>
-                        {products.map((item) => (
+                        {filteredProducts.map((item) => (
                             <Productcard product={item} key={item._id}/>
                         ))}
                     </div>
