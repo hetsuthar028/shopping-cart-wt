@@ -31,3 +31,40 @@ exports.getAll = (req, res) => {
             return res.status(500).send({success: false, message: "Please try again!"});
         })
 }
+
+exports.getByNumber = (req, res) => {
+    let mrNo = req.params.mrNo;
+    if(mrNo){
+        MRSchema.findOne({"mrNo": mrNo})
+            .then((findResp) => {
+                if(findResp === null){
+                    return res.status(400).send({success: false, message: "Material receipt does not exists!"});
+                }
+                return res.status(200).send({success: true, receipt: findResp});
+            })
+            .catch((err) => {
+                return res.status(500).send({success: false, message: "Please try again!"});
+            })
+    } else {
+        return res.status(400).send({success: false, message: "Invalid data"});
+    }
+}
+
+exports.deleteByNumber = (req, res) => {
+    let mrNo = req.params.mrNo;
+    if(mrNo){
+        MRSchema.findOneAndDelete({"mrNo": mrNo})
+            .then((deleteResp) => {
+                if(deleteResp === null){
+                    return res.status(400).send({success: false, message: "Material receipt does not exists!"})
+                }
+
+                return res.status(200).send({success: true, result: deleteResp});
+            })
+            .catch((err) => {
+                return res.status(500).send({success: false, message: "Please try again!"});
+            })
+    } else {
+        return res.status(400).send({success: false, message: "Invalid data"});
+    }
+}

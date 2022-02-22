@@ -46,9 +46,13 @@ const AddProduct = (props) => {
         })
         .then((addResponse) => {
             console.log(addResponse.data);
+            dispatch(showBanner({apiSuccessResponse: "Product added ✔️"}));
+            return navigate('/home');
         })
         .catch((addErr) => {
             console.log(addErr.response.data);
+            dispatch(showBanner({apiErrorResponse: addErr.response?.data.message}));
+            return navigate('/home');
         })
     } 
 

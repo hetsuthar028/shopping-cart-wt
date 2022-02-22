@@ -15,6 +15,7 @@ import Banner from '../components/banner/Banner';
 import AdminMaterialReceipts from '../components/admin/AdminMaterialReceipts';
 import MRList from '../components/material-receipt/MRList';
 import AddMR from '../components/material-receipt/AddMR';
+import MaterialReceipt from '../components/material-receipt/MaterialReceipt';
 
 const AppRouter = () => {
 
@@ -45,7 +46,7 @@ const AppRouter = () => {
             <Route path='/admin/mr' element={<AdminMaterialReceipts />}>
                 <Route path='add' element={<AddMR />} />
                 <Route index element={<MRList />} />
-                <Route path=':number' element={<h1>Something</h1>} />
+                <Route path=':number' element={<MaterialReceipt />} />
             </Route>
 
         </Routes>

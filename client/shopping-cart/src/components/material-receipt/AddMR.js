@@ -281,7 +281,7 @@ const AddMR = () => {
                                 <Button type="submit" color="success">
                                     Submit
                                 </Button>
-                                <Button type="submit" color="danger">
+                                <Button handleClick={(e) => {e.preventDefault(); navigate('/admin/mr')}} color="danger">
                                     Cancel
                                 </Button>
                             </div>

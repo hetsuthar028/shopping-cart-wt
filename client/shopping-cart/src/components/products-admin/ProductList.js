@@ -31,7 +31,7 @@ const Productlist = (props) => {
     }
 
     useEffect(() => {
-        if(!userState.isAdmin){
+        if(!userState?.isAdmin){
             dispath(showBanner({apiErrorResponse: "Unauthorized user"}));
             return navigate('/home')
         }

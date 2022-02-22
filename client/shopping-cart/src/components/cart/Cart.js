@@ -7,11 +7,20 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { showBanner } from '../../redux';
+import FormHelperText from "../shared/FormHelperText";
+
+const initialContactForm = {
+    address: "",
+    contact: "",
+}
 
 const Cart = (props) => {
 
     const [cartItems, setCartItems] = useState([]);
-    
+    const [hasErrors, setHasErrors] = useState(true);
+    const [errors, setErrors] = useState([]);
+    const [contactDetails, setContactDetails] = useState(initialContactForm);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -62,9 +71,60 @@ const Cart = (props) => {
         .catch((currentUserErr) => {
             dispatch(showBanner({apiErrorResponse: currentUserErr.response.data.message}));
             return navigate('/auth/login');
-        })
+        })   
+    }
 
-        
+    const validateForm = (field, value) => {
+        if(field === "address" && value.length < 15){
+            setHasErrors(true);
+            return "Invalid address"
+        }
+        else if(field === "contact" && value.toString().length != 10){
+            setHasErrors(true);
+            return "Invalid contact number"
+        }
+        else {
+            setHasErrors(false);
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        setContactDetails({
+            ...contactDetails,
+            [name]: value
+        });
+
+        setErrors({
+            ...errors,
+            [name]: validateForm(name, value),
+        });
+    }
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+
+        axios.post('http://localhost:8080/order/purchase/', {
+            "userId": cartItems[0].userId,
+            "totalAmount": getTotalAmount(),
+            "address": contactDetails.address,
+            "contact": contactDetails.contact,
+            "products": cartItems.map((item) => item.productId),
+        }, {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((orderResp) => {
+            console.log(orderResp);
+            dispatch(showBanner({apiSuccessResponse: orderResp.data.message}));
+            return navigate('/home');
+        })
+        .catch((err) => {
+            console.log(err.response.data);
+            dispatch(showBanner({apiErrorResponse: err.response?.data.message}));
+            return navigate('/home');
+        })
     }
 
     useEffect(() => {
@@ -163,7 +223,7 @@ const Cart = (props) => {
                     <div className="total-section">
                         <div className="row">
                             <div className="col-md-6">
-                                <form>
+                                <form method="POST" onSubmit={handleFormSubmit}>
                                     <div className="row">
                                         <div className="col-md-6 m-auto">
                                             <div className="form-group">
@@ -174,7 +234,10 @@ const Cart = (props) => {
                                                 <Input
                                                     name="address"
                                                     placeholder="Please enter your address"
+                                                    value={contactDetails.address}
+                                                    handleChange={handleInputChange}
                                                 />
+                                                <FormHelperText>{errors.address}</FormHelperText>
                                             </div>
                                         </div>
                                         <div className="col-md-6 m-auto">
@@ -186,14 +249,17 @@ const Cart = (props) => {
                                                 <Input
                                                     name="contact"
                                                     type="number"
+                                                    value={contactDetails.contact}
+                                                    handleChange={handleInputChange}
                                                     placeholder="Please enter your contact number"
                                                 />
+                                                <FormHelperText>{errors.contact}</FormHelperText>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="row my-2">
                                         <div className="form-group">
-                                            <Button color="warning">
+                                            <Button type="submit" disabled={hasErrors || cartItems.length == 0} color="warning">
                                                 <strong>Place Order</strong>
                                             </Button>
                                         </div>
