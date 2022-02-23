@@ -7,5 +7,6 @@ cartRouter.post("/add/item", authMiddleware.isLoggedIn, cartController.addItem);
 cartRouter.get("/get/items/:userId", authMiddleware.isLoggedIn, cartController.getCartItemsByUserId);
 cartRouter.delete("/delete/item/:itemId", authMiddleware.isLoggedIn, cartController.deleteItemById);
 cartRouter.delete('/emptycart/:userId', authMiddleware.isLoggedIn, cartController.emptyCart);
+cartRouter.put('/update/quantity/:cartId', authMiddleware.isLoggedIn, cartController.updateQuantity);
 
 module.exports = cartRouter;

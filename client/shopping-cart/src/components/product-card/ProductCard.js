@@ -26,6 +26,7 @@ const Productcard = (props) => {
                         {
                             productId: _id,
                             userId: userId,
+                            buyQuantity: 1,
                         },
                         {
                             headers: {
@@ -45,6 +46,7 @@ const Productcard = (props) => {
                     })
                     .catch((addToCartErr) => {
                         console.log(addToCartErr.response.data);
+                        return dispatch(showBanner({apiErrorResponse: addToCartErr.response?.data.message}));
                     });
             })
             .catch((err) => {

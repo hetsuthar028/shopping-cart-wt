@@ -19,6 +19,8 @@ exports.purchase = (req, res) => {
             contact: parseInt(contact),
         });
 
+        console.log("Products", products);
+
         newOrder.save()
             .then((saveResult) => {
                 console.log("AUTH HEADER", req.headers.authorization)
