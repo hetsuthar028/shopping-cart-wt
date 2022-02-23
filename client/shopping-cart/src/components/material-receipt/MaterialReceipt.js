@@ -87,7 +87,7 @@ const MaterialReceipt = () => {
                         </div>
                         <div className="row m-0">
                             <div className="form-group text-end">
-                                <Button color="warning">✏️</Button>
+                                <Button color="warning" handleClick={() => navigate('/admin/mr/add', {state: materialReceipt})}>✏️</Button>
                                 <Button color="info" handleClick={handleMRDelete}>❌</Button>
                             </div>
                         </div>
@@ -99,7 +99,7 @@ const MaterialReceipt = () => {
                                         label="MR Date:"
                                     />
                                     <div>
-                                        <h5>22/02/2022</h5>
+                                        <h5>{new Date(materialReceipt.mrDate).toDateString()}</h5>
                                         {/* <Input
                                             placeholder="Please enter MR date"
                                             type="date"
@@ -117,7 +117,7 @@ const MaterialReceipt = () => {
                                         label="MR Number:"
                                     />
                                     <div>
-                                        <h5>101</h5>
+                                        <h5>{materialReceipt.mrNo}</h5>
                                         {/* <Input
                                         placeholder="Please enter MR Number"
                                         name="mrNo"
@@ -135,7 +135,7 @@ const MaterialReceipt = () => {
                                         label="Supplier:"
                                     />
                                     <div>
-                                        <h5>Shopify Pvt. Ltd.</h5>
+                                        <h5>{materialReceipt.supplier}</h5>
                                         {/* <Input
                                             placeholder="Please enter Supplier Name"
                                             name="supplier"

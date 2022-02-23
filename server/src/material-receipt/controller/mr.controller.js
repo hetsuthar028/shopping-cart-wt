@@ -68,3 +68,22 @@ exports.deleteByNumber = (req, res) => {
         return res.status(400).send({success: false, message: "Invalid data"});
     }
 }
+
+exports.updateMr = (req, res) => {
+    let mrNo = req.params.mrNo;
+    let updateFields = req.body;
+    console.log("Update Fields", updateFields);
+    if(mrNo && Object.keys(updateFields).length !=0){
+        MRSchema.updateOne({"mrNo": parseInt(mrNo)}, {
+            $set: {...updateFields}
+        })
+        .then((updateResp) => {
+            return res.status(200).send({success: true, result: updateResp});
+        })
+        .catch((updateErr) => {
+            return res.status(500).send({success: false, message: "Please try again!"});
+        })
+    } else {
+        return res.status(400).send({success: false, message: "Invalid data"});
+    }
+}
