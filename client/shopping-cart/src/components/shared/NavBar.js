@@ -36,7 +36,7 @@ const Navbar = () => {
                     id="navbarNav"
                 >
                     <ul className="navbar-nav">
-                        {currentState.error?.message ? (
+                        {currentState.error?.message || Object.keys(currentState.user).length == 0 ? (
                             <>
                                 <li className="nav-item">
                                     <Link
