@@ -10,7 +10,8 @@ const Input = (props) => {
         value,
         required = true,
         checked = false,
-        className
+        className,
+        disabled = false,
     } = props;
     return (
         <input
@@ -23,6 +24,7 @@ const Input = (props) => {
             value={value}
             required={required}
             checked={checked}
+            disabled={disabled}
         />
     );
 };

@@ -6,7 +6,7 @@ import Button from "../shared/Button";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { showBanner } from '../../redux';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const initialValues = {
     productName: "",
@@ -26,8 +26,10 @@ const AddMR = () => {
     const [totalProducts, setTotalProducts] = useState(1);
     const [productValues, setProductValues] = useState([initialValues]);
 
+    const [formEdit, setFormEdit] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleAddNewRow = (e) => {
         e.preventDefault();
@@ -37,6 +39,14 @@ const AddMR = () => {
     };
 
     useEffect(() => {
+        console.log("Location", location);
+        if(location.state != null){
+            let {mrDate, mrNo, supplier, products} = location?.state;
+            setFormEdit(true);
+            setTotalProducts(products.length);
+            setProductValues(products);
+            setMrData({ mrDate: mrDate.toString().split('T')[0], mrNo, supplier});
+        }
         axios.get("http://localhost:8080/user/get/currentuser", {
             headers: {
                 authorization: window.localStorage.getItem('bearer'),
@@ -85,23 +95,44 @@ const AddMR = () => {
         console.log("FORM SUBMIT");
         console.log(productValues);
         console.log(mrData);
-        axios.post("http://localhost:8080/materialReceipt/add", {
-            ...mrData,
-            products: productValues
-        }, {
-            headers: {
-                authorization: window.localStorage.getItem('bearer'),
-            }
-        })
-        .then((addResp) => {
-            console.log(addResp);
-            showBanner({apiSuccessResponse: "Material Receipt Generated ✔️"});
-            return navigate('/admin/mr/');
-        })
-        .catch((err) => {
-            console.log(err.response.data);
-            return showBanner({apiErrorResponse: err.response?.data.message});
-        })
+
+        if(formEdit){
+            axios.put(`http://localhost:8080/materialReceipt/update/id/${mrData.mrNo}`, {
+                ...mrData,
+                products: productValues
+            }, {
+                headers: {
+                    authorization: window.localStorage.getItem('bearer'),
+                }
+            })
+                .then((updateResp) => {
+                    console.log("Update Resp", updateResp.data);
+                    dispatch(showBanner({apiSuccessResponse: "Material Receipt Updated!"}));
+                    return navigate(-1);
+                })
+                .catch((err) => {
+                    console.log("Update Err", err.response);
+                    return navigate(-1);
+                })
+        } else {
+            axios.post("http://localhost:8080/materialReceipt/generate", {
+                ...mrData,
+                products: productValues
+            }, {
+                headers: {
+                    authorization: window.localStorage.getItem('bearer'),
+                }
+            })
+            .then((addResp) => {
+                console.log(addResp);
+                showBanner({apiSuccessResponse: "Material Receipt Generated ✔️"});
+                return navigate('/admin/mr/');
+            })
+            .catch((err) => {
+                console.log(err.response.data);
+                return showBanner({apiErrorResponse: err.response?.data.message});
+            })
+        }
     }
 
     return (
@@ -109,7 +140,7 @@ const AddMR = () => {
             <div className="col-md-11 m-auto">
                 <form method="POST" onSubmit={handleFormSubmit}>
                     <Card>
-                        <h3>Add Material Receipt</h3>
+                        <h3>{formEdit ? "Edit" : "Add"} Material Receipt</h3>
                         <div className="row m-0 mt-3">
                             <div className="col-md-4 p-1 m-auto">
                                 <div className="form-group">
@@ -136,6 +167,7 @@ const AddMR = () => {
                                         placeholder="Please enter MR Number"
                                         name="mrNo"
                                         value={mrData.mrNo}
+                                        disabled={formEdit}
                                         handleChange={handleMRDataInputChange}
                                     />
                                 </div>
