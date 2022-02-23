@@ -109,7 +109,7 @@ const Cart = (props) => {
             "totalAmount": getTotalAmount(),
             "address": contactDetails.address,
             "contact": contactDetails.contact,
-            "products": cartItems.map((item) => item.productId),
+            "products": cartItems.map((item) => ({productId: item.productId, buyQuantity: item.buyQuantity})),
         }, {
             headers: {
                 authorization: window.localStorage.getItem('bearer'),
@@ -121,7 +121,6 @@ const Cart = (props) => {
             return navigate('/home');
         })
         .catch((err) => {
-            console.log(err.response.data);
             dispatch(showBanner({apiErrorResponse: err.response?.data.message}));
             return navigate('/home');
         })
@@ -133,7 +132,7 @@ const Cart = (props) => {
 
     const getOrderAmount = () => {
         let orderAmt = cartItems.reduce((prevTotal, item) => {
-            return prevTotal += item.product.price
+            return prevTotal += (item.product.price * item.buyQuantity)
         }, 0);
         return orderAmt;
     }
@@ -160,7 +159,42 @@ const Cart = (props) => {
         }
     }
 
-    
+    const handleQuantityIncrease = (id, buyQuantity) => {
+        console.log(id, buyQuantity);
+        axios.put(`http://localhost:8080/cart/update/quantity/${id}`, {
+            "buyQuantity": buyQuantity + 1
+        }, {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((increaseResp) => {
+            console.log("Increased", increaseResp);
+            loadCartItems();
+        })
+        .catch((err) => {
+            console.log("Increase error", err.response);
+        })
+    }
+
+    const handleQuantityDecrease = (id, buyQuantity) => {
+        console.log(id, buyQuantity);
+        axios.put(`http://localhost:8080/cart/update/quantity/${id}`, {
+            "buyQuantity": buyQuantity - 1,
+        }, {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((decreaseResp) => {
+            console.log("Decreased", decreaseResp);
+            loadCartItems();
+        })
+        .catch((err) => {
+            console.log("Decrease error", err.response);
+        })
+    }
+
     return (
         <div>
             <div className="row m-0">
@@ -195,6 +229,8 @@ const Cart = (props) => {
                                     <th>Product Name</th>
                                     {/* <th>Quantity</th> */}
                                     <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
                                     {/* <th>Total</th> */}
                                     {/* <th>Edit</th> */}
                                     <th>Delete</th>
@@ -212,6 +248,8 @@ const Cart = (props) => {
                                         <td>{item.product.name}</td>
                                         {/* <td>2</td> */}
                                         <td>₹ {item.product.price}</td>
+                                        <td><Button color="warning" handleClick={() => handleQuantityIncrease(item._id, item.buyQuantity)}>➕</Button>{" "}{item.buyQuantity}{" "}<Button handleClick={() => handleQuantityDecrease(item._id, item.buyQuantity)} color="warning">➖</Button></td>
+                                        <td>₹ {item.product.price * item.buyQuantity}</td>
                                         {/* <td>₹ 11,998</td> */}
                                         {/* <td>📝</td> */}
                                         <td><Button color="danger" handleClick={() => handleCartDelete(item._id)}>🗑️</Button></td>
