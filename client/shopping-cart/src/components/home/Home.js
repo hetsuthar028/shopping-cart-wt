@@ -35,7 +35,7 @@ const Home = () => {
     const performSearch = (e) => {
         e.preventDefault();
         setFilteredProducts(products.filter((product) => {
-            if(product.name.toLowerCase().indexOf(searchFilter.toLowerCase()) != -1){
+            if(product.name.toLowerCase().indexOf(e.target.value.toLowerCase()) != -1){
                 return true
             }
         }))
@@ -46,12 +46,15 @@ const Home = () => {
             <div className='row m-0 p-2'>
                 <div className='col-md-12 m-auto'>
                     <div className='search-bar'>
-                        <SearchBar searchFilter={searchFilter} setSearchFilter={setSearchFilter} performSearch={performSearch} />
+                        <SearchBar performSearch={performSearch} />
                     </div>
                     <div className='card-list'>
                         {filteredProducts.map((item) => (
                             <Productcard product={item} key={item._id}/>
                         ))}
+                        {filteredProducts.length === 0 && (
+                            <h5>No products found!</h5>
+                        )}
                     </div>
                 </div>
             </div>

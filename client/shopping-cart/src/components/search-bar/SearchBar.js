@@ -8,12 +8,11 @@ const SearchBar = (props) => {
     return (
         <div className='col-md-7 m-auto my-2'>
         <div style={{display: "inline-flex"}} className="form-group">
-            {/* <h5 style={{alignSelf: 'center', margin: "0 10px"}}>Search: </h5> */}
+            <h5 style={{alignSelf: 'center', margin: "0 10px"}}>Search: </h5>
             <Input 
                 placeholder="Search items"
                 name='searchbar'
-                value={searchFilter}
-                handleChange={(e) => setSearchFilter(e.target.value)}
+                handleChange={performSearch}
             />
             <Button handleClick={performSearch}>Search</Button>
         </div>

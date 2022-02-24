@@ -11,6 +11,7 @@ const UsersList = () => {
     const [editIndex, setEditIndex] = useState(-1);
     const [editValues, setEditValues] = useState({});
 
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ const UsersList = () => {
             })
             .then((getResponse) => {
                 setAllUsers(getResponse.data.users);
+                setFilteredUsers(getResponse.data.users);
             })
             .catch((err) => {
                 dispatch(showBanner({apiErrorResponse: err.response.data.message}));
@@ -97,10 +99,22 @@ const UsersList = () => {
         }
     }
 
+    const performUsersFilter = (e) => {
+        const filterQuery = e.target.value.toString().toLowerCase();
+        setFilteredUsers(allUsers.filter((user) => {
+            if(user.email.toString().toLowerCase().indexOf(filterQuery) > -1){
+                return true;
+            }
+        }))
+    }
+
     return (
         <div>
             <div className="row m-0">
-                <div className="col-md-12">
+                <div className="col-md-12" style={{display: "flex", justifyContent: "space-between"}}>
+                    <div className="text-start">
+                        <Input handleChange={performUsersFilter} placeholder="Search users by email address" />
+                    </div>
                     <div className="text-end">
                         <Link to="/admin/users/add">
                             <Button color="warning">Add New User</Button>
@@ -124,7 +138,7 @@ const UsersList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {allUsers.map((user, idx) => {
+                            {filteredUsers.map((user, idx) => {
                                 return idx === editIndex ? (
                                     <tr key={idx} className="bg-secondary text-white">
                                         <td>

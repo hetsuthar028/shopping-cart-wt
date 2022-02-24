@@ -51,14 +51,102 @@ exports.purchase = (req, res) => {
 exports.getMyOrders = (req, res) => {
     let userId = req.params.userId;
     if(userId){
-        OrderSchema.find({userId: userId})
-            .then((findResult) => {
-                return res.send({success: true, orders: findResult});
-            })
-            .catch((findErr) => {
-                return res.send({success: false, message: "Please try again!"});
-            })
+        OrderSchema.find({'userId': userId})
+        .then((ordersResp) => {
+            let temp2 = [];
+        
+            ordersResp.map((order, idx) => {
+                
+                let products = [];
+
+                order.products.map((pds, idx2) => {
+                    axios.get(`http://localhost:8080/product/get/id/${pds.productId}`, {
+                        headers: {
+                            authorization: req.headers.authorization,
+                        }
+                    })
+                    .then((resp) => {
+                        products.push(resp.data.product);
+                        if(products.length === order.products.length){
+                            temp2.push({order, products: products});
+                            if(temp2.length === ordersResp.length){
+                                return res.status(200).send({success: true, orders: temp2});
+                            }
+                        }
+                    })
+                    .catch((err) => {
+                        console.log("ERROR", err);
+                    })
+                });
+            });
+        })
+        .catch((err) => {
+            return res.status(500).send({success: false, message: "Please try again!"});
+        })
     } else {
         return res.send({success: false, message: "Invalid data"});
     }
 } 
+
+exports.getAllOrders = (req, res) => {
+    OrderSchema.find({})
+        .then((ordersResp) => {
+            let items = ordersResp;
+            
+            let temp2 = [];
+            // console.log("FINAL", ordersResp.length);
+            
+            ordersResp.map((order, idx) => {
+                // console.log("Order", order);
+                let products = [];
+                order.products.map((pds, idx2) => {
+                    axios.get(`http://localhost:8080/product/get/id/${pds.productId}`, {
+                        headers: {
+                            authorization: req.headers.authorization,
+                        }
+                    })
+                    .then((resp) => {
+                        // console.log("Product", resp.data.product)
+                        products.push(resp.data.product);
+                        if(products.length === order.products.length){
+                            // console.log("Done", products);
+                            temp2.push({order, products: products});
+                            console.log("Final", temp2);
+                            if(temp2.length === ordersResp.length){
+                                return res.status(200).send({success: true, orders: temp2});
+                            }
+                        }
+                    })
+                    .catch((err) => {
+                        console.log("ERROR", err);
+                    })
+                });
+            });
+            // items.map((item, idx) => {
+            //     // console.log(idx, item.products);
+            //     let tempArr = [];
+            //     item.products.map((item2) => {
+            //         axios.get(`http://localhost:8080/product/get/id/${item2.productId}`, {
+            //             headers: {
+            //                 authorization: req.headers.authorization
+            //             }
+            //         }).then((resp) => {
+            //             // console.log(resp.data)
+            //             tempArr.push({...resp.data, buyQuantity: item2.buyQuantity});
+            //             // tempArr.push({[resp.data.product._id]: {...resp.data, buyQuantity: item2.buyQuantity}});
+            //             if(tempArr.length === items.length){
+            //                 console.log("Data", tempArr);
+            //                 // return tempArr;
+            //                 temp2.push({...item, tempArr});
+            //             }
+            //         })
+            //     });
+            // })
+            // console.log(tempArr);
+            // console.log("Products", products[0].products)
+            // return res.status(200).send({success: true, orders: ordersResp});
+        })
+        .catch((err) => {
+            return res.status(500).send({success: false, message: "Please try again!"});
+        })
+}

@@ -11,6 +11,9 @@ const Productlist = (props) => {
     const [editIndex, setEditIndex] = useState(-1);
     const [editValues, setEditValues] = useState({});
 
+    // const [filterValue, setFilterValue] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+
     const dispath = useDispatch();
     const navigate = useNavigate();
     const userState = useSelector((state) => state.user.user);
@@ -24,6 +27,7 @@ const Productlist = (props) => {
         })
         .then((getResponse) => {
             setProducts(getResponse.data.products);
+            setFilteredProducts(getResponse.data.products);
         })
         .catch((err) => {
             dispath(showBanner({apiErrorResponse: err.response.data.message}));
@@ -97,10 +101,22 @@ const Productlist = (props) => {
         }
     }
 
+    const performProductSearch = (e) => {
+        let searchQuery = e.target.value;
+        setFilteredProducts(products.filter((product) => {
+            if(product.name.toString().toLowerCase().indexOf(searchQuery.toString().toLowerCase()) > -1){
+                return true;
+            }
+        }))
+    }
+
     return (
         <div>
             <div className="row m-0">
-                <div className="col-md-12">
+                <div className="col-md-12" style={{display: "flex",justifyContent: "space-between"}}>
+                    <div className="text-start">
+                        <Input handleChange={performProductSearch} placeholder="Search by product name"/>
+                    </div>
                     <div className="text-end">
                         <Link to="/admin/products/add">
                             <Button color="warning">Add New Product</Button>
@@ -125,7 +141,7 @@ const Productlist = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map((product, idx) => {
+                            {filteredProducts.map((product, idx) => {
                                 return editIndex === idx ? (
                                     <tr
                                         className="bg-secondary text-white"

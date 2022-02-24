@@ -25,7 +25,7 @@ const Cart = (props) => {
     const navigate = useNavigate();
 
     const loadCartItems = () => {
-        
+        console.log("Loading...");
         // Change the userId once user state is ready to use
         axios.get('http://localhost:8080/user/get/currentuser', {
             headers: {
@@ -41,6 +41,10 @@ const Cart = (props) => {
             })
             .then((response) => {
                 let cartItems = response.data.cartItems
+
+                if(cartItems.length === 0){
+                    return setCartItems([]);
+                }
                 
                 cartItems.map((item, idx) => {
                     axios.get(`http://localhost:8080/product/get/id/${item.productId}`, {
@@ -52,6 +56,7 @@ const Cart = (props) => {
                         if(idx === cartItems.length -1){
                             setCartItems(cartItems)
                         }
+                        
                     })
                     .catch((productErr) => {
                         console.log("Product Err", productErr);
@@ -150,7 +155,7 @@ const Cart = (props) => {
                 }
             })
             .then((deleteResp) => {
-                console.log(deleteResp.data);
+                console.log("DeleteResp", deleteResp.data);
                 loadCartItems();
             })
             .catch((err) => {
@@ -258,7 +263,7 @@ const Cart = (props) => {
                             </tbody>
                         </table>
                     </div>
-                    <div className="total-section">
+                    <div className="total-section p-3">
                         <div className="row">
                             <div className="col-md-6">
                                 <form method="POST" onSubmit={handleFormSubmit}>
@@ -313,9 +318,9 @@ const Cart = (props) => {
                             </div>
                             <div className="col-md-3 text-start">
                                 <h5>₹ {getOrderAmount()}</h5>
-                                <h5>₹ 127.8</h5>
-                                <h5>₹ 250</h5>
-                                <h3 className="text-success">₹ {getTotalAmount()}</h3>
+                                <h5>₹ {cartItems.length !=0 ? "127.8": "0"} </h5>
+                                <h5>₹ {cartItems.length !=0 ? "120": "0"}</h5>
+                                <h3 className="text-success">₹ {cartItems.length !=0 ? getTotalAmount() : "0"}</h3>
                             </div>
                         </div>
                     </div>

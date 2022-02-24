@@ -16,6 +16,10 @@ import AdminMaterialReceipts from '../components/admin/AdminMaterialReceipts';
 import MRList from '../components/material-receipt/MRList';
 import AddMR from '../components/material-receipt/AddMR';
 import MaterialReceipt from '../components/material-receipt/MaterialReceipt';
+import ErrorPage from '../components/error/ErrorPage';
+import WelcomePage from '../components/welcome/WelcomePage';
+import MyOrders from '../components/orders/MyOrders';
+import AdminSales from '../components/admin/AdminSales';
 
 const AppRouter = () => {
 
@@ -29,11 +33,12 @@ const AppRouter = () => {
             )}
             
         <Routes>
-            
+            <Route path="/" element={<WelcomePage />} />
             <Route path='/auth/login' element={<Login />} />
             <Route path='/auth/signup' element={<SignUp />} />
             <Route path='/home' element={<Home />} />
             <Route path='/my/cart' element={<Cart />} />
+            <Route path='/my/orders' element={<MyOrders />} />
             <Route path="/admin" element={<AdminHome />} />
             <Route path="/admin/products" element={<AdminProducts />}>
                 <Route path="add" element={<AddProduct />} />
@@ -48,6 +53,8 @@ const AppRouter = () => {
                 <Route index element={<MRList />} />
                 <Route path=':number' element={<MaterialReceipt />} />
             </Route>
+            <Route path="/admin/sales" element={<AdminSales />} />
+            <Route path='*' element={<ErrorPage />} />
 
         </Routes>
         </>

@@ -3,13 +3,15 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../shared/Button";
 import Card from "../shared/Card";
+import Input from "../shared/Input";
 import dummyImage from "../../static/receipt-76-454913.png";
 import { useDispatch } from "react-redux";
 import { showBanner } from '../../redux';
 
 const MRList = () => {
     const [materialReceipts, setMaterialReceipts] = useState([]);
-    
+    const [filteredMRs, setFilteredMRs] = useState([]);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -23,6 +25,7 @@ const MRList = () => {
             .then((resp) => {
                 console.log(resp.data.result);
                 setMaterialReceipts(resp.data.result);
+                setFilteredMRs(resp.data.result);
             })
             .catch((err) => {
                 console.log(err.response.data);
@@ -34,10 +37,22 @@ const MRList = () => {
             });
     }, []);
 
+    const performMRFilter = (e) => {
+        let filterQuery = e.target.value.toString().toLowerCase();
+        setFilteredMRs(materialReceipts.filter((receipt) => {
+            if((receipt.supplier.toString().toLowerCase().indexOf(filterQuery) > -1) || (receipt.mrNo.toString().toLowerCase().indexOf(filterQuery) > -1)){
+                return true;
+            }
+        }))
+    }
+
     return (
         <div>
             <div className="row m-0">
-                <div className="col-md-12">
+                <div className="col-md-12" style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <div className="text-start">
+                        <Input placeholder="Search by supplier or number" handleChange={performMRFilter} />
+                    </div>
                     <div className="text-end">
                         <Link to="/admin/mr/add">
                             <Button color="warning">
@@ -50,7 +65,7 @@ const MRList = () => {
 
             <div className="row m-0 mt-3">
                 <div className="col-md-12">
-                    {materialReceipts.map((mr, idx) => (
+                    {filteredMRs.map((mr, idx) => (
                         <div style={{ display: "inline-flex" }} key={idx}>
                             <Card
                                 style={{
