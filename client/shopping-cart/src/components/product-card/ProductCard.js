@@ -70,7 +70,7 @@ const Productcard = (props) => {
                         style={{ maxHeight: "150px" }}
                     />
                     <h3 className="my-2">{name}</h3>
-                    <h5 className="text-success">Price: ₹{price}</h5>
+                    <h5 className="text-success">Price: ₹{price}/-</h5>
                     <p
                         style={{
                             textAlign: "justify",

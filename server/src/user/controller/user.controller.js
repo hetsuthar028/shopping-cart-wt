@@ -67,6 +67,9 @@ exports.authLogin = (req, res) => {
             .get(`http://localhost:8080/user/get/id/${email}`)
             .then((userResult) => {
                 console.log(userResult.data.user?.password);
+                if(userResult.data.user?.status === false){
+                    return res.status(401).send({success: false, message: "Your account is deactived. Kindly contact Customer support."});
+                }
                 if (password === userResult.data.user?.password) {
                     let user = userResult.data.user;
                     let userToken = jwt.sign(
