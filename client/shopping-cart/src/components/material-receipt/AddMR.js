@@ -243,7 +243,8 @@ const AddMR = () => {
         let tempValues = productValues;
         tempValues[idx] = {
             ...tempValues[idx],
-            "productId": value
+            "productId": value,
+            "rate": products.filter((product) => product._id == value)[0].price
         }
 
         setProductValues([...tempValues]);
