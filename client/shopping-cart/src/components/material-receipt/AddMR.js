@@ -47,7 +47,22 @@ const AddMR = () => {
             let { mrDate, mrNo, supplier, products } = location?.state;
             setFormEdit(true);
             setTotalProducts(products.length);
-            setProductValues(products);
+
+            // 🐛✔️ After - Bug Fixed
+            setProductValues(products.map((product) =>(
+                {
+                    quantity: product.quantity,
+                    rate: product.rate,
+                    totalAmt: product.totalAmt,
+                    _id: product._id,
+                    productId: product.productId._id
+
+                }
+            )))
+            
+            // 🐛🤔 Before
+            // console.log(products);
+            // setProductValues(products);
             setMrData({
                 mrDate: mrDate.toString().split("T")[0],
                 mrNo,

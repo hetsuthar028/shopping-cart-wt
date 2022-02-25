@@ -158,14 +158,38 @@ exports.decreaseStockOnPurchase = (req, res) => {
     //         console.log(err);
     //     })
 
+    // Approach - 2
+    [...Array(decreaseQuantity).keys()].map((qty, idx) => {
+        MRSchema.findOneAndUpdate({"products.productId": productId, "products.quantity": {$gt: 0}}, {$inc: {"products.$.quantity": -1}})
+        .then((updateResult) => {
+            console.log("Update result", updateResult, decreaseQuantity, idx);
+            if(updateResult === null){
+                return res.status(400).send({success: false, message: "Product out of stock!"});
+            }
+            if(decreaseQuantity - 1 === idx){
+                return res.send(updateResult);
+            }
+        })
+        .catch((updateErr) => {
+            console.log(updateErr);
+        })
+    })
+    // MRSchema.updateOne({"products.productId": productId}, {$inc: {"products.$.quantity": -decreaseQuantity }})
+    // .then((result) => {
+    //     return res.send(result);
+    // })
+    // .catch((err) => {
+    //     console.log(err);
+    // })
+
     // Working
-    MRSchema.updateOne({"products.productId": productId}, {$inc: {"products.$.quantity": -decreaseQuantity }})
-        .then((result) => {
-            return res.send(result);
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+    // MRSchema.updateOne({"products.productId": productId}, {$inc: {"products.$.quantity": -decreaseQuantity }})
+    //     .then((result) => {
+    //         return res.send(result);
+    //     })
+    //     .catch((err) => {
+    //         console.log(err);
+    //     })
 
     // MRSchema.updateOne({"productId": "productId"}, )
     // MRSchema.findOne({"productId": productId}, {"products.quantity": 1, "products.productId": 1})

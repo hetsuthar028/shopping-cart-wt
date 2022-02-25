@@ -192,7 +192,7 @@ const Productlist = (props) => {
                                             />
                                         </td>
                                         <td>
-                                            {editValues.quantity}
+                                            {productQuantities[product._id]}
                                         </td>
                                         <td>
                                             <Input

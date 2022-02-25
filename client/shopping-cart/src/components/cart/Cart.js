@@ -126,6 +126,7 @@ const Cart = (props) => {
             return navigate('/home');
         })
         .catch((err) => {
+            console.log("Error", err.response.data);
             dispatch(showBanner({apiErrorResponse: err.response?.data.message}));
             return navigate('/home');
         })
