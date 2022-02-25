@@ -1,0 +1,38 @@
+.banner-container {
+    padding: 10px;
+    position: fixed;
+    top: 60px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    right: 20px;
+    animation: banner 0.5s;
+    z-index: 1;
+}
+
+pre {
+    margin-bottom: 0px;
+}
+
+.success-banner-container {
+    background-color: #04ff04;
+}
+
+.error-banner-container {
+    background-color: rgb(211, 0, 0);
+    color: white;
+}
+
+@keyframes banner {
+    0% {
+        right: -400px
+    }
+
+    50% {
+        right: 40px;
+    }
+
+    100% {
+        right: 20px;
+    }
+}
