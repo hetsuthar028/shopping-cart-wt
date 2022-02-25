@@ -41,6 +41,20 @@ const AddMR = () => {
         setTotalProducts((totalProducts) => totalProducts + 1);
     };
 
+    const handleRowDelete = (e, idx) => {
+        e.preventDefault();
+        if(totalProducts === 1){
+            return ;
+        }
+        let tempProducts = productValues;
+        productValues.splice(idx, 1)
+        setProductValues([...productValues]);
+        setTotalProducts((prod) => prod - 1);
+        setMrData({...mrData, "totalAmount": tempProducts.reduce((prev, prod) => {
+            return prev += parseFloat(prod.totalAmt ?? 0)
+        }, 0)});
+    }
+
     useEffect(() => {
         console.log("Location", location);
         if (location.state != null) {
@@ -129,26 +143,41 @@ const AddMR = () => {
         };
         tempProducts[idx] = something;
         
+        const totalAmt = parseInt(Number(tempProducts[idx].quantity ?? 0)) * parseFloat(Number(tempProducts[idx].rate ?? 0));
+        tempProducts[idx].totalAmt = totalAmt;
         // console.log(tempProducts);
         setProductValues([...tempProducts]);
-        if(name === 'totalAmt'){
-            console.log(tempProducts.reduce((prev, prod) => {
-                return prev += parseFloat(prod.totalAmt)
-            }, 0))
+        // if(name === 'totalAmt'){
+            // console.log("Total Amount", tempProducts.reduce((prev, prod) => {
+            //     return prev += parseFloat(prod.totalAmt ?? 0)
+            // }, 0))
             setMrData({...mrData, "totalAmount": tempProducts.reduce((prev, prod) => {
-                return prev += parseFloat(prod.totalAmt)
+                return prev += parseFloat(prod.totalAmt ?? 0)
             }, 0)});
-        }
+        // }
         
         // setProductValues([productValues[idx][e.target.name] = e.target.value])
     };
 
+    const validateForm = () => {
+        return productValues.every((product) => {
+            // console.log(product.productId,product.quantity,product.rate,product.totalAmt)
+            return (product.productId ?? 0) !=0 && parseInt(product.quantity ?? 0) >0 && parseInt(product.rate ?? 0) >0 && parseInt(product.totalAmt ?? 0) >0
+        })
+    }
+
     const handleFormSubmit = (e) => {
         e.preventDefault();
         console.log("FORM SUBMIT");
-        console.log(productValues);
-        console.log(mrData);
+        console.log("Prod values", productValues);
+        console.log("Mr data", mrData);
 
+        if(!validateForm()){
+            console.log("Not validate");
+            dispatch(showBanner({apiErrorResponse: "Invalid data"}));
+            return ;
+        }
+        console.log("validated");
         if (formEdit) {
             axios
                 .put(
@@ -195,19 +224,20 @@ const AddMR = () => {
                 )
                 .then((addResp) => {
                     console.log(addResp);
-                    showBanner({
+                    dispatch(showBanner({
                         apiSuccessResponse: "Material Receipt Generated ✔️",
-                    });
+                    }));
                     return navigate("/admin/mr/");
                 })
                 .catch((err) => {
-                    console.log(err.response.data);
-                    return showBanner({
+                    console.log("ERR", err.response.data);
+                    return dispatch(showBanner({
                         apiErrorResponse: err.response?.data.message,
-                    });
+                    }));
                 });
         }
     };
+
 
     const handleSelectChange = (value, idx) => {
         let tempValues = productValues;
@@ -250,6 +280,7 @@ const AddMR = () => {
                                     <Input
                                         placeholder="Please enter MR Number"
                                         name="mrNo"
+                                        type="number"
                                         value={mrData.mrNo}
                                         disabled={formEdit}
                                         handleChange={handleMRDataInputChange}
@@ -403,6 +434,7 @@ const AddMR = () => {
                                                                 idx
                                                             )
                                                         }
+                                                        disabled={true}
                                                     />
                                                 </td>
                                                 <td>
@@ -413,6 +445,14 @@ const AddMR = () => {
                                                         }
                                                     >
                                                         ➕
+                                                    </Button>
+                                                    <Button
+                                                        color="danger"
+                                                        handleClick={
+                                                            (e) => handleRowDelete(e, idx)
+                                                        }
+                                                    >
+                                                        ➖
                                                     </Button>
                                                 </td>
                                             </tr>

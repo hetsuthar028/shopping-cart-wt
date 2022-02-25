@@ -18,7 +18,11 @@ exports.generate = (req, res) => {
                 return res.status(201).send({success: true, result: saveResult})
             })
             .catch((saveErr) => {
+
                 console.log("ERROR", saveErr);
+                if(saveErr.message.toString().indexOf("mrNo") !=-1){
+                    return res.status(500).send({success: false, message: "Please enter unique MR number!"});
+                }
                 return res.status(500).send({success: false, message: "Please try again!"});
             })
     } else {

@@ -8,6 +8,7 @@ const MRSchema = new mongoose.Schema({
     mrNo: {
         type: String,
         required: true,
+        unique: true,
     },
     supplier: {
         type: String,

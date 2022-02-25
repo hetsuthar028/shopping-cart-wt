@@ -20,6 +20,7 @@ const Cart = (props) => {
     const [hasErrors, setHasErrors] = useState(true);
     const [errors, setErrors] = useState([]);
     const [contactDetails, setContactDetails] = useState(initialContactForm);
+    const [productQuantities, setProductQuantities] = useState({});
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -56,6 +57,20 @@ const Cart = (props) => {
                         if(idx === cartItems.length -1){
                             setCartItems(cartItems)
                         }
+
+                        axios.get(`http://localhost:8080/materialreceipt/get/qty/by/product/id/${item.productId}`, {
+                            headers: {
+                                authorization: window.localStorage.getItem('bearer'),
+                            }
+                        })
+                        .then((qtyResp) => {
+                            let temp = productQuantities;
+                            temp[item.productId] = qtyResp.data.totalQuantities;
+                            setProductQuantities(...temp); 
+                        })
+                        .catch((qtyErr) => {
+                            console.log(qtyErr);
+                        })
                         
                     })
                     .catch((productErr) => {
@@ -165,8 +180,10 @@ const Cart = (props) => {
         }
     }
 
-    const handleQuantityIncrease = (id, buyQuantity) => {
-        console.log(id, buyQuantity);
+    const handleQuantityIncrease = (id, productId, buyQuantity) => {
+        if(productQuantities[productId] === buyQuantity){
+            return;
+        }
         axios.put(`http://localhost:8080/cart/update/quantity/${id}`, {
             "buyQuantity": buyQuantity + 1
         }, {
@@ -175,16 +192,16 @@ const Cart = (props) => {
             }
         })
         .then((increaseResp) => {
-            console.log("Increased", increaseResp);
             loadCartItems();
         })
         .catch((err) => {
             console.log("Increase error", err.response);
+            return dispatch(showBanner({apiErrorResponse: "Some error occured!"}));
         })
     }
 
     const handleQuantityDecrease = (id, buyQuantity) => {
-        console.log(id, buyQuantity);
+        // console.log(id, buyQuantity);
         axios.put(`http://localhost:8080/cart/update/quantity/${id}`, {
             "buyQuantity": buyQuantity - 1,
         }, {
@@ -254,7 +271,7 @@ const Cart = (props) => {
                                         <td>{item.product.name}</td>
                                         {/* <td>2</td> */}
                                         <td>₹ {item.product.price}</td>
-                                        <td><Button color="warning" handleClick={() => handleQuantityIncrease(item._id, item.buyQuantity)}>➕</Button>{" "}{item.buyQuantity}{" "}<Button handleClick={() => handleQuantityDecrease(item._id, item.buyQuantity)} color="warning">➖</Button></td>
+                                        <td><Button color="warning" handleClick={() => handleQuantityIncrease(item._id, item.productId, item.buyQuantity)}>➕</Button>{" "}{item.buyQuantity}{" "}<Button handleClick={() => handleQuantityDecrease(item._id, item.buyQuantity)} color="warning">➖</Button></td>
                                         <td>₹ {item.product.price * item.buyQuantity}</td>
                                         {/* <td>₹ 11,998</td> */}
                                         {/* <td>📝</td> */}
