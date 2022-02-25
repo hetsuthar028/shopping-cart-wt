@@ -30,7 +30,7 @@ const AdminSales = () => {
         })
         .then((currentUserResp) => {
             let userId = currentUserResp.data.user._id
-            axios.get(`http://localhost:8080/order/get/id/${userId}`, {
+            axios.get(`http://localhost:8080/order/get/all`, {
                 headers: {
                     authorization: window.localStorage.getItem('bearer'),
                 }

@@ -12,6 +12,9 @@ const Productlist = (props) => {
     const [editValues, setEditValues] = useState({});
 
     // const [filterValue, setFilterValue] = useState('');
+
+    const [productQuantities, setProductQuantities] = useState({});
+
     const [filteredProducts, setFilteredProducts] = useState([]);
 
     const dispath = useDispatch();
@@ -28,6 +31,25 @@ const Productlist = (props) => {
         .then((getResponse) => {
             setProducts(getResponse.data.products);
             setFilteredProducts(getResponse.data.products);
+            getResponse.data.products.map(function(product) {
+                function loadQuantities(productId){
+                    console.log("Got request for", productId);
+                    axios.get(`http://localhost:8080/materialreceipt/get/qty/by/product/id/${productId}`, {
+                        headers: {
+                            authorization: window.localStorage.getItem('bearer'),
+                        }
+                    })
+                    .then((qtyResp) => {
+                        let temp = productQuantities;
+                        temp[productId] = qtyResp.data.totalQuantities;
+                        setProductQuantities(...temp);            
+                    })
+                    .catch((qtyErr) => {
+                        console.log("Quantity Loading err", qtyErr.response.data);
+                    })
+                }
+                loadQuantities(product._id);
+            })
         })
         .catch((err) => {
             dispath(showBanner({apiErrorResponse: err.response.data.message}));
@@ -170,11 +192,7 @@ const Productlist = (props) => {
                                             />
                                         </td>
                                         <td>
-                                            <Input
-                                                name="quantity"
-                                                value={editValues.quantity}
-                                                handleChange={handleInputChange}
-                                            />
+                                            {editValues.quantity}
                                         </td>
                                         <td>
                                             <Input
@@ -219,7 +237,7 @@ const Productlist = (props) => {
                                                 "..."}
                                         </td>
                                         <td>₹ {product.price}</td>
-                                        <td>{product.quantity}</td>
+                                        <td>{productQuantities[product._id]}</td>
                                         <td>
                                             <Input
                                                 type="checkbox"

@@ -80,7 +80,7 @@ exports.authLogin = (req, res) => {
                         },
                         process.env.JWT_SECRET,
                         {
-                            expiresIn: 60 * 20,
+                            expiresIn: 60 * 60,
                         }
                     );
 
