@@ -26,9 +26,9 @@ exports.getProductById = (req, res) => {
 }
 
 exports.addProduct = (req, res) => {
-    let {productName, productDescription, productPrice, productQuantity, productStatus} = req.body;
-    if(productName && parseFloat(productPrice) > 0 && parseInt(productQuantity) > 0){
-        let newProduct = new ProductSchema({name: productName, description: productDescription, price: productPrice, status: productStatus, quantity: productQuantity})
+    let {productName, productDescription, productPrice, productStatus} = req.body;
+    if(productName && parseFloat(productPrice) > 0){
+        let newProduct = new ProductSchema({name: productName, description: productDescription, price: productPrice, status: productStatus})
         newProduct.save().then((saveResult) => {
             return res.send({success: true, result: saveResult});
         }).catch((saveErr) => {

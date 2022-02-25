@@ -32,7 +32,7 @@ const MaterialReceipt = () => {
                 }
             })
             .then((getResp) => {
-                console.log(getResp.data);
+                console.log("Data2", getResp.data);
                 setMaterialReceipt(getResp.data.receipt)
                 setTotalProducts(getResp.data.receipt.products.length);
             })
@@ -162,7 +162,7 @@ const MaterialReceipt = () => {
                                 <tbody>
                                     {materialReceipt.products?.map((product, idx) => (
                                         <tr key={idx}>
-                                            <td>{product.productName}</td>
+                                            <td>{product.productId.name}</td>
                                             <td>{product.quantity}</td>
                                             <td>{product.rate}</td>
                                             <td>{product.totalAmt}</td>

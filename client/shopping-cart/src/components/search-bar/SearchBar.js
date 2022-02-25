@@ -14,7 +14,7 @@ const SearchBar = (props) => {
                 name='searchbar'
                 handleChange={performSearch}
             />
-            <Button handleClick={performSearch}>Search</Button>
+            <Button>Search</Button>
         </div>
         </div>
     );

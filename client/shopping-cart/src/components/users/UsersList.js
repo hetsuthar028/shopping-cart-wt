@@ -5,6 +5,7 @@ import Button from "../shared/Button";
 import Input from "../shared/Input";
 import { useDispatch } from "react-redux";
 import { showBanner } from '../../redux';
+import FormHelperText from "../shared/FormHelperText";
 
 const UsersList = () => {
     const [allUsers, setAllUsers] = useState([]);
@@ -12,6 +13,10 @@ const UsersList = () => {
     const [editValues, setEditValues] = useState({});
 
     const [filteredUsers, setFilteredUsers] = useState([]);
+
+    // Edit fields validation
+    const [editErrors, setEditErrors] = useState({});
+    const [hasErrors, setHasErrors] = useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -36,6 +41,20 @@ const UsersList = () => {
             });
     };
 
+    const validateForm = (name, value) => {
+        if(name === "username" && value.length <= 5){
+            setHasErrors(true);
+            return "Invalid username";
+        }
+        if(name === "password" && value.length <= 8){
+            setHasErrors(true);
+            return "Password must be greater than 8 character";
+        }
+        else {
+            setHasErrors(false);
+        }
+    }
+
     useEffect(() => {
         loadUsers();
     }, []);
@@ -47,6 +66,11 @@ const UsersList = () => {
             ...editValues,
             [name]: value,
         });
+
+        setEditErrors({
+            ...editErrors,
+            [name]: validateForm(name, value),
+        })
     };
 
     const handleEditClick = (item, idx) => {
@@ -147,6 +171,7 @@ const UsersList = () => {
                                                 value={editValues.username}
                                                 handleChange={handleInputChange}
                                             />
+                                            <FormHelperText color="white">{editErrors.username}</FormHelperText>
                                         </td>
                                         <td>{editValues.email}</td>
                                         <td>
@@ -155,6 +180,7 @@ const UsersList = () => {
                                                 value={editValues.password}
                                                 handleChange={handleInputChange}
                                             />
+                                            <FormHelperText color="white">{editErrors.password}</FormHelperText>
                                         </td>
                                         <td>
                                             <Input
@@ -170,6 +196,7 @@ const UsersList = () => {
                                                     color="warning"
                                                     className="my-1"
                                                     handleClick={handleEditSave}
+                                                    disabled={hasErrors}
                                                 >
                                                     Save
                                                 </Button>

@@ -5,81 +5,92 @@ import Formlabel from "../shared/FormLabel";
 import Input from "../shared/Input";
 import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { showBanner } from '../../redux';
+import { showBanner } from "../../redux";
 
 const initialValues = {
-    email: '',
-    username: '',
-    password: '',
-    cnfPassword: '',
-}
-const emailRegExp = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    email: "",
+    username: "",
+    password: "",
+    cnfPassword: "",
+};
+const emailRegExp =
+    /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const SignUp = (props) => {
-
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
     const [hasErrors, setHasErrors] = useState(true);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const location = useLocation();
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log(values)
-        axios.post('http://localhost:8080/user/auth/signup', {
-            "email": values.email,
-            "password": values.password,
-            "status": true,
-            "isAdmin": false,
-            "username": values.username
-        })
-        .then((signupResp) => {
-            console.log(signupResp.data.success);
-            dispatch(showBanner({apiSuccessResponse: "Account created successfully!"}));
-            return navigate('/auth/login');
-        })
-        .catch((err) => {
-            dispatch(showBanner({apiErrorResponse: err.response.data.message}));
-            console.log(err.response.data.message);
-        })
-    }
+        console.log(values);
+        axios
+            .post("http://localhost:8080/user/auth/signup", {
+                email: values.email,
+                password: values.password,
+                status: true,
+                isAdmin: false,
+                username: values.username,
+            })
+            .then((signupResp) => {
+                console.log(signupResp.data.success);
+                dispatch(
+                    showBanner({
+                        apiSuccessResponse: "Account created successfully!",
+                    })
+                );
+                if (location.pathname.toString().indexOf("admin") > -1) {
+                    return navigate("/admin/users");
+                }
+                return navigate("/auth/login");
+            })
+            .catch((err) => {
+                dispatch(
+                    showBanner({ apiErrorResponse: err.response.data.message })
+                );
+                console.log(err.response.data.message);
+            });
+    };
 
     const validateForm = (field, value) => {
-        if(field === "email" && !emailRegExp.test(value.toLowerCase())){
+        if (field === "email" && !emailRegExp.test(value.toLowerCase())) {
             setHasErrors(true);
             return "Invalid email address";
         }
-        if(field === "username" && value.length <= 5){
+        if (field === "username" && value.length <= 5) {
             setHasErrors(true);
             return "Username must contains more than 5 characters";
         }
-        if(field === "password" && value.length <= 8){
+        if (field === "password" && value.length <= 8) {
             setHasErrors(true);
             return "Password must be greater than 8 characters";
         }
-        if(field === "cnfPassword" && value != values.password){
+        if (field === "cnfPassword" && value != values.password) {
             setHasErrors(true);
             return "Confirm Password does not match";
         } else {
             setHasErrors(false);
         }
-    }
+    };
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setValues({
             ...values,
-            [name]: value
+            [name]: value,
         });
 
         setErrors({
             ...errors,
             [name]: validateForm(name, value),
         });
-    }
+    };
 
     return (
         <div>
@@ -113,7 +124,9 @@ const SignUp = (props) => {
                                     value={values.username}
                                     handleChange={handleInputChange}
                                 />
-                                <FormHelperText>{errors.username}</FormHelperText>
+                                <FormHelperText>
+                                    {errors.username}
+                                </FormHelperText>
                             </div>
 
                             <div className="form-group">
@@ -128,7 +141,9 @@ const SignUp = (props) => {
                                     value={values.password}
                                     handleChange={handleInputChange}
                                 />
-                                <FormHelperText>{errors.password}</FormHelperText>
+                                <FormHelperText>
+                                    {errors.password}
+                                </FormHelperText>
                             </div>
 
                             <div className="form-group">
@@ -143,19 +158,31 @@ const SignUp = (props) => {
                                     value={values.cnfPassword}
                                     handleChange={handleInputChange}
                                 />
-                                <FormHelperText>{errors.cnfPassword}</FormHelperText>
+                                <FormHelperText>
+                                    {errors.cnfPassword}
+                                </FormHelperText>
                             </div>
 
                             <div className="form-group">
-                                <Button type="submit" color="success" disabled={hasErrors}>Sign Up</Button>
+                                <Button
+                                    type="submit"
+                                    color="success"
+                                    disabled={hasErrors}
+                                >
+                                    Sign Up
+                                </Button>
                             </div>
-
-                            <div className="form-group">
-                                <p>
-                                    Already have an account?{" "}
-                                    <Link to="/auth/login">Login here</Link>
-                                </p>
-                            </div>
+                            {!(
+                                location.pathname.toString().indexOf("admin") >
+                                -1
+                            ) && (
+                                <div className="form-group">
+                                    <p>
+                                        Already have an account?{" "}
+                                        <Link to="/auth/login">Login here</Link>
+                                    </p>
+                                </div>
+                            )}
                         </Card>
                     </form>
                 </div>

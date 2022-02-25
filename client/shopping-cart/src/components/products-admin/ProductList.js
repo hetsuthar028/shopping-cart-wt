@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
-import { showBanner } from '../../redux';
+import { showBanner } from "../../redux";
+import FormHelperText from "../shared/FormHelperText";
 
 const Productlist = (props) => {
     const [products, setProducts] = useState([]);
@@ -12,7 +13,14 @@ const Productlist = (props) => {
     const [editValues, setEditValues] = useState({});
 
     // const [filterValue, setFilterValue] = useState('');
+
+    const [productQuantities, setProductQuantities] = useState({});
+
     const [filteredProducts, setFilteredProducts] = useState([]);
+
+    // Edit fields validation
+    const [editErrors, setEditErrors] = useState({});
+    const [hasErrors, setHasErrors] = useState(false);
 
     const dispath = useDispatch();
     const navigate = useNavigate();
@@ -20,25 +28,49 @@ const Productlist = (props) => {
 
     const loadProducts = () => {
         axios
-        .get("http://localhost:8080/product/get/all", {
-            headers: {
-                authorization: window.localStorage.getItem("bearer"),
-            },
-        })
-        .then((getResponse) => {
-            setProducts(getResponse.data.products);
-            setFilteredProducts(getResponse.data.products);
-        })
-        .catch((err) => {
-            dispath(showBanner({apiErrorResponse: err.response.data.message}));
-        });
-    }
+            .get("http://localhost:8080/product/get/all", {
+                headers: {
+                    authorization: window.localStorage.getItem("bearer"),
+                },
+            })
+            .then((getResponse) => {
+                setProducts(getResponse.data.products);
+                setFilteredProducts(getResponse.data.products);
+
+                getResponse.data.products.map((product) => {
+                    axios
+                        .get(
+                            `http://localhost:8080/materialreceipt/get/qty/by/product/id/${product._id}`,
+                            {
+                                headers: {
+                                    authorization:
+                                        window.localStorage.getItem("bearer"),
+                                },
+                            }
+                        )
+                        .then((qtyResp) => {
+                            let temp = productQuantities;
+                            temp[product._id] = qtyResp.data.totalQuantities;
+                            setProductQuantities({ ...temp });
+                        })
+                        .catch((qtyErr) => {
+                            console.log("Quantity Loading err", qtyErr);
+                        });
+                });
+            })
+            .catch((err) => {
+                dispath(
+                    showBanner({ apiErrorResponse: err.response.data.message })
+                );
+                return navigate("/home");
+            });
+    };
 
     useEffect(() => {
-        if(!userState?.isAdmin){
-            dispath(showBanner({apiErrorResponse: "Unauthorized user"}));
-            return navigate('/home')
-        }
+        // if(!userState?.isAdmin){
+        //     dispath(showBanner({apiErrorResponse: "Unauthorized user"}));
+        //     return navigate('/home')
+        // }
         loadProducts();
     }, []);
 
@@ -47,12 +79,30 @@ const Productlist = (props) => {
         setEditIndex(idx);
     };
 
+    const validateForm = (name, value) => {
+        if (name === "name" && value.length < 7) {
+            setHasErrors(true);
+            return "Invalid product name";
+        }
+        if (name === "price" && parseFloat(Number(value)) <= 0) {
+            setHasErrors(true);
+            return "Invalid product price";
+        } else {
+            setHasErrors(false);
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
         setEditValues({
             ...editValues,
             [name]: value,
+        });
+
+        setEditErrors({
+            ...editErrors,
+            [name]: validateForm(name, value),
         });
     };
 
@@ -86,36 +136,58 @@ const Productlist = (props) => {
     };
 
     const handleProductDelete = (productId) => {
-        let getConfirm = window.confirm("Are you sure you want to delete this product?")
-        if(getConfirm){
-            axios.delete(`http://localhost:8080/product/delete/id/${productId}`, {headers: {
-                authorization: window.localStorage.getItem('bearer'),
-            }})
-            .then((deleteResp) => {
-                console.log(deleteResp.data);
-                loadProducts();
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            })
+        let getConfirm = window.confirm(
+            "Are you sure you want to delete this product?"
+        );
+        if (getConfirm) {
+            axios
+                .delete(
+                    `http://localhost:8080/product/delete/id/${productId}`,
+                    {
+                        headers: {
+                            authorization:
+                                window.localStorage.getItem("bearer"),
+                        },
+                    }
+                )
+                .then((deleteResp) => {
+                    console.log(deleteResp.data);
+                    loadProducts();
+                })
+                .catch((err) => {
+                    console.log(err.response.data);
+                });
         }
-    }
+    };
 
     const performProductSearch = (e) => {
         let searchQuery = e.target.value;
-        setFilteredProducts(products.filter((product) => {
-            if(product.name.toString().toLowerCase().indexOf(searchQuery.toString().toLowerCase()) > -1){
-                return true;
-            }
-        }))
-    }
+        setFilteredProducts(
+            products.filter((product) => {
+                if (
+                    product.name
+                        .toString()
+                        .toLowerCase()
+                        .indexOf(searchQuery.toString().toLowerCase()) > -1
+                ) {
+                    return true;
+                }
+            })
+        );
+    };
 
     return (
         <div>
             <div className="row m-0">
-                <div className="col-md-12" style={{display: "flex",justifyContent: "space-between"}}>
+                <div
+                    className="col-md-12"
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                >
                     <div className="text-start">
-                        <Input handleChange={performProductSearch} placeholder="Search by product name"/>
+                        <Input
+                            handleChange={performProductSearch}
+                            placeholder="Search by product name"
+                        />
                     </div>
                     <div className="text-end">
                         <Link to="/admin/products/add">
@@ -154,6 +226,9 @@ const Productlist = (props) => {
                                                 value={editValues.name}
                                                 handleChange={handleInputChange}
                                             />
+                                            <FormHelperText color="white">
+                                                {editErrors.name}
+                                            </FormHelperText>
                                         </td>
                                         <td>
                                             <Input
@@ -166,22 +241,27 @@ const Productlist = (props) => {
                                             <Input
                                                 name="price"
                                                 value={editValues.price}
+                                                type="number"
                                                 handleChange={handleInputChange}
                                             />
+                                            <FormHelperText color="white">
+                                                {editErrors.price}
+                                            </FormHelperText>
                                         </td>
                                         <td>
-                                            <Input
-                                                name="quantity"
-                                                value={editValues.quantity}
-                                                handleChange={handleInputChange}
-                                            />
+                                            {productQuantities[product._id]}
                                         </td>
                                         <td>
                                             <Input
                                                 type="checkbox"
                                                 name="productStatus"
                                                 checked={editValues.status}
-                                                handleChange={() => {setEditValues({...editValues, status: !editValues.status})}}
+                                                handleChange={() => {
+                                                    setEditValues({
+                                                        ...editValues,
+                                                        status: !editValues.status,
+                                                    });
+                                                }}
                                             />
                                         </td>
                                         <td>
@@ -190,6 +270,7 @@ const Productlist = (props) => {
                                                     color="warning"
                                                     className="my-1"
                                                     handleClick={handleEditSave}
+                                                    disabled={hasErrors}
                                                 >
                                                     Save
                                                 </Button>
@@ -207,7 +288,16 @@ const Productlist = (props) => {
                                         </td>
 
                                         <td>
-                                            <Button color="warning" handleClick={() => handleProductDelete(editValues._id)}>❌</Button>
+                                            <Button
+                                                color="warning"
+                                                handleClick={() =>
+                                                    handleProductDelete(
+                                                        editValues._id
+                                                    )
+                                                }
+                                            >
+                                                ❌
+                                            </Button>
                                         </td>
                                     </tr>
                                 ) : (
@@ -219,7 +309,9 @@ const Productlist = (props) => {
                                                 "..."}
                                         </td>
                                         <td>₹ {product.price}</td>
-                                        <td>{product.quantity}</td>
+                                        <td>
+                                            {productQuantities[product._id]}
+                                        </td>
                                         <td>
                                             <Input
                                                 type="checkbox"
@@ -241,7 +333,16 @@ const Productlist = (props) => {
                                             </Button>
                                         </td>
                                         <td>
-                                            <Button color="warning" handleClick={() => handleProductDelete(product._id)}>❌</Button>
+                                            <Button
+                                                color="warning"
+                                                handleClick={() =>
+                                                    handleProductDelete(
+                                                        product._id
+                                                    )
+                                                }
+                                            >
+                                                ❌
+                                            </Button>
                                         </td>
                                     </tr>
                                 );

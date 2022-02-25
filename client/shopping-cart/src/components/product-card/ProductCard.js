@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Card from "../shared/Card";
 import dummyImage from "../../static/backiee-181542.jpg";
 import Button from "../shared/Button";
@@ -9,6 +9,7 @@ import { showBanner } from "../../redux";
 const Productcard = (props) => {
     const { _id, name, price, quantity, description, status } = props.product;
 
+    const [totalQuantities, setTotalQuantities] = useState(0);
     const dispatch = useDispatch();
 
     const handleAddToCart = () => {
@@ -20,6 +21,10 @@ const Productcard = (props) => {
             })
             .then((currentUserResp) => {
                 let userId = currentUserResp.data.user._id;
+                if(currentUserResp.data.user.isAdmin === true){
+                    dispatch(showBanner({apiErrorResponse: "Admin can't perform this action!"}))
+                    return console.log("ADMIN");
+                }
                 axios
                     .post(
                         "http://localhost:8080/cart/add/item",
@@ -54,6 +59,19 @@ const Productcard = (props) => {
             });
     };
 
+    useEffect(() => {
+        axios.get(`http://localhost:8080/materialreceipt/get/qty/by/product/id/${_id}`, {
+            headers: {
+                authorization: window.localStorage.getItem('bearer'),
+            }
+        })
+        .then((totalResp)=> {
+            setTotalQuantities(totalResp.data.totalQuantities);
+        }).catch((err) => {
+            console.log(err);
+        })
+    }, []);
+
     return (
         props && (
             <div style={{ display: "inline-flex" }}>
@@ -71,15 +89,18 @@ const Productcard = (props) => {
                     />
                     <h3 className="my-2">{name}</h3>
                     <h5 className="text-success">Price: ₹{price}/-</h5>
+                    <h5><b>Only {totalQuantities} left</b></h5>
                     <p
                         style={{
                             textAlign: "justify",
                             textJustify: "inter-word",
                         }}
+                        className="m-0"
                     >
                         {description}
                     </p>
-                    <Button color="warning" handleClick={handleAddToCart}>
+                    {/* <p className="text-start m-0">Stock Available: {totalQuantities}</p> */}
+                    <Button color="warning" handleClick={handleAddToCart} disabled={totalQuantities === 0}>
                         <strong>Add to Cart</strong>
                     </Button>
                 </Card>

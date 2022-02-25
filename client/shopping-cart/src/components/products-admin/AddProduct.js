@@ -13,7 +13,7 @@ const initialValues = {
     productName: '',
     productDescription: '',
     productPrice: '',
-    productQuantity: '',
+    // productQuantity: '',
     productStatus: false,
 }
 
@@ -69,10 +69,11 @@ const AddProduct = (props) => {
             setHasErrors(true);
             return "Product price must be greater than ₹0"
         }
-        if(field === "productQuantity" && parseInt(value) <=0){
-            setHasErrors(true);
-            return "Product quantity must be greater than 0"
-        } else {
+        // if(field === "productQuantity" && parseInt(value) <=0){
+        //     setHasErrors(true);
+        //     return "Product quantity must be greater than 0"
+        // } 
+        else {
             setHasErrors(false);
         }
     }
@@ -140,7 +141,7 @@ const AddProduct = (props) => {
                         <FormHelperText>{errors.productPrice}</FormHelperText>
                     </div>
 
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <Formlabel
                             label="Product Quantity:"
                             htmlFor="productQuantity"
@@ -153,7 +154,7 @@ const AddProduct = (props) => {
                             handleChange={handleInputChange}
                         />
                         <FormHelperText>{errors.productQuantity}</FormHelperText>
-                    </div>
+                    </div> */}
 
                     <div className="form-group">
                         <Formlabel
