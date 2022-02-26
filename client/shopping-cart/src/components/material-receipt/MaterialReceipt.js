@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Button from "../shared/Button";
-import Input from "../shared/Input";
 import Formlabel from "../shared/FormLabel";
 import Card from "../shared/Card";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { showBanner } from "../../redux";
 
 const MaterialReceipt = () => {
@@ -20,10 +19,6 @@ const MaterialReceipt = () => {
 
     useEffect(() => {
         let mrNumber = location.pathname.split('/')[3]
-        // if(!userState.isAdmin){
-        //     dispatch(showBanner({apiErrorResponse: "Unauthorized user"}));
-        //     return navigate('/home');
-        // }
 
         if(mrNumber){
             axios.get(`http://localhost:8080/materialReceipt/get/id/${mrNumber}`, {
@@ -32,9 +27,8 @@ const MaterialReceipt = () => {
                 }
             })
             .then((getResp) => {
-                console.log("Data2", getResp.data);
                 setMaterialReceipt(getResp.data.receipt)
-                setTotalProducts(getResp.data.receipt.products.length);
+                // setTotalProducts(getResp.data.receipt.products.length);
             })
             .catch((err) => {
                 dispatch(showBanner({apiErrorResponse: err.response.data.message}));
@@ -44,13 +38,9 @@ const MaterialReceipt = () => {
         
     }, []);
 
-    const handleProductInputChange = () => {};
-
     const handleFormSubmit = (e) => {
         e.preventDefault();
     };
-
-    const handleAddNewRow = () => {};
 
     const handleMRDelete = () => {
         let confirmDelete = window.confirm("Are you sure you want to delete this Material Receipt?");
@@ -77,6 +67,12 @@ const MaterialReceipt = () => {
         }
     }
 
+    const getGrandTotal = () => {
+        return materialReceipt.products?.reduce((prev, product) => {
+            return prev += product.totalAmt;
+        }, 0);
+    }
+
     return (
         <div>
             <div className="col-md-11 m-auto">
@@ -100,13 +96,6 @@ const MaterialReceipt = () => {
                                     />
                                     <div>
                                         <h5>{new Date(materialReceipt.mrDate).toDateString()}</h5>
-                                        {/* <Input
-                                            placeholder="Please enter MR date"
-                                            type="date"
-                                            name="mrDate"
-                                            // value={mrData.mrDate}
-                                            // handleChange={handleMRDataInputChange}
-                                        /> */}
                                     </div>
                                 </div>
                             </div>
@@ -118,12 +107,6 @@ const MaterialReceipt = () => {
                                     />
                                     <div>
                                         <h5>{materialReceipt.mrNo}</h5>
-                                        {/* <Input
-                                        placeholder="Please enter MR Number"
-                                        name="mrNo"
-                                        // value={mrData.mrNo}
-                                        // handleChange={handleMRDataInputChange}
-                                    /> */}
                                     </div>
                                 </div>
                             </div>
@@ -136,17 +119,10 @@ const MaterialReceipt = () => {
                                     />
                                     <div>
                                         <h5>{materialReceipt.supplier}</h5>
-                                        {/* <Input
-                                            placeholder="Please enter Supplier Name"
-                                            name="supplier"
-                                            // value={mrData.supplier}
-                                            // handleChange={handleMRDataInputChange}
-                                        /> */}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {/* <hr /> */}
 
                         <div className="row m-0 mt-3">
                             <table className="table">
@@ -162,7 +138,7 @@ const MaterialReceipt = () => {
                                 <tbody>
                                     {materialReceipt.products?.map((product, idx) => (
                                         <tr key={idx}>
-                                            <td>{product.productId.name}</td>
+                                            <td>{product?.productId?.name}</td>
                                             <td>{product.quantity}</td>
                                             <td>{product.rate}</td>
                                             <td>{product.totalAmt}</td>
@@ -171,16 +147,9 @@ const MaterialReceipt = () => {
                                 </tbody>
                             </table>
                         </div>
-                        {/* <div className="row m-0 mt-3">
-                            <div className="col-md-12 m-auto">
-                                <Button type="submit" color="success">
-                                    Submit
-                                </Button>
-                                <Button type="submit" color="danger">
-                                    Cancel
-                                </Button>
-                            </div>
-                        </div> */}
+                        <div className="row m-0 mt-3">
+                            <h3>Grand Total: ₹{getGrandTotal()}</h3>
+                        </div>
                     </Card>
                 </form>
             </div>

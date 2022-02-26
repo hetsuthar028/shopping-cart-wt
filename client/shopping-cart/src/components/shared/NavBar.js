@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-// import fetchUser from "../../redux/user/userActions";
 import { fetchUser } from "../../redux/";
 
 const Navbar = () => {
@@ -11,8 +10,6 @@ const Navbar = () => {
     useEffect(() => {
         dispatch(fetchUser());
     }, []);
-
-    console.log("INSIDE NAV", currentState);
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -66,10 +63,6 @@ const Navbar = () => {
                                         Home
                                     </Link>
                                 </li>
-
-                                {/* <li className="nav-item">
-                                    <Link to="/" className="nav-link active">My Orders</Link>
-                                </li> */}
 
                                 {currentState.user.isAdmin ? (
                                     <>

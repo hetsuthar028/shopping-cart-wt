@@ -7,16 +7,18 @@ import FormHelperText from "../shared/FormHelperText";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { clearUser, fetchUser, hideBanner, showBanner } from '../../redux';
+import { clearUser, fetchUser, showBanner } from "../../redux";
 
 const initialValues = {
     email: "",
     password: "",
-}
+};
 
-const emailRegExp = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const emailRegExp =
+    /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const Login = (props) => {
+
     const [values, setValues] = useState(initialValues);
     const [hasErrors, setHasErrors] = useState(true);
     const [errors, setErrors] = useState({});
@@ -25,51 +27,61 @@ const Login = (props) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        window.localStorage.clear('bearer');
-        dispatch(clearUser())
+        
+        // Clearing the user token whenever user visits the Login page
+        window.localStorage.clear("bearer");
+        dispatch(clearUser());
+
     }, []);
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:8080/user/auth/login', {
-            "email": values.email,
-            "password": values.password
-        })
-        .then((loginResp) => {            
-            window.localStorage.setItem('bearer', loginResp.data.token);
-            dispatch(showBanner({apiSuccessResponse: 'Logged In successfully'}));
-            dispatch(fetchUser());
-            return navigate('/home');
-        })
-        .catch((err) => {
-            dispatch(showBanner({apiErrorResponse: err.response.data.message}));
-        })
+
+        // Verify the login details
+        axios
+            .post("http://localhost:8080/user/auth/login", {
+                email: values.email,
+                password: values.password,
+            })
+            .then((loginResp) => {
+                window.localStorage.setItem("bearer", loginResp.data.token);
+                dispatch(
+                    showBanner({ apiSuccessResponse: "Logged In successfully" })
+                );
+                dispatch(fetchUser());
+                return navigate("/home");
+            })
+            .catch((err) => {
+                return dispatch(
+                    showBanner({ apiErrorResponse: err.response.data.message })
+                );
+            });
     };
 
     const validateForm = (field, value) => {
-        if(field === 'email' && !emailRegExp.test(value.toLowerCase())){
+        if (field === "email" && !emailRegExp.test(value.toLowerCase())) {
             setHasErrors(true);
-            return "Invalid email address"
+            return "Invalid email address";
         }
-        if(field === 'password' && value.length <= 8){
+        if (field === "password" && value.length <= 8) {
             setHasErrors(true);
-            return "Password must be greater than 8 characters"
+            return "Password must be greater than 8 characters";
         } else {
             setHasErrors(false);
         }
-    }
+    };
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setValues({
             ...values,
-            [name]: value
+            [name]: value,
         });
         setErrors({
             ...errors,
             [name]: validateForm(name, value),
         });
-    }
+    };
 
     return (
         <div>
@@ -78,10 +90,7 @@ const Login = (props) => {
                     <form method="POST" onSubmit={handleFormSubmit}>
                         <Card>
                             <div className="form-group">
-                                <Formlabel
-                                    label="Email:"
-                                    htmlFor="email"
-                                />
+                                <Formlabel label="Email:" htmlFor="email" />
                                 <Input
                                     placeholder="Please enter email address"
                                     name="email"
@@ -103,10 +112,14 @@ const Login = (props) => {
                                     value={values.password}
                                     handleChange={handleInputChange}
                                 />
-                                <FormHelperText>{errors.password}</FormHelperText>
+                                <FormHelperText>
+                                    {errors.password}
+                                </FormHelperText>
                             </div>
                             <div className="form-group">
-                                <Button color="success" disabled={hasErrors}>Login</Button>
+                                <Button color="success" disabled={hasErrors}>
+                                    Login
+                                </Button>
                             </div>
                             <div className="form-group">
                                 <p>

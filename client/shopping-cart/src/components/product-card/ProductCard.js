@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../shared/Card";
 import dummyImage from "../../static/backiee-181542.jpg";
 import Button from "../shared/Button";
@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { showBanner } from "../../redux";
 
 const Productcard = (props) => {
-    const { _id, name, price, quantity, description, status } = props.product;
+    const { _id, name, price, description } = props.product;
 
     const [totalQuantities, setTotalQuantities] = useState(0);
     const dispatch = useDispatch();
@@ -21,9 +21,13 @@ const Productcard = (props) => {
             })
             .then((currentUserResp) => {
                 let userId = currentUserResp.data.user._id;
-                if(currentUserResp.data.user.isAdmin === true){
-                    dispatch(showBanner({apiErrorResponse: "Admin can't perform this action!"}))
-                    return console.log("ADMIN");
+                if (currentUserResp.data.user.isAdmin === true) {
+                    return dispatch(
+                        showBanner({
+                            apiErrorResponse:
+                                "Admin can't perform this action!",
+                        })
+                    );
                 }
                 axios
                     .post(
@@ -41,7 +45,6 @@ const Productcard = (props) => {
                         }
                     )
                     .then((addToCartResp) => {
-                        console.log(addToCartResp.data);
                         return dispatch(
                             showBanner({
                                 apiSuccessResponse: "Item added to cart",
@@ -50,26 +53,39 @@ const Productcard = (props) => {
                         // Dispplay a popup message here
                     })
                     .catch((addToCartErr) => {
-                        console.log(addToCartErr.response.data);
-                        return dispatch(showBanner({apiErrorResponse: addToCartErr.response?.data.message}));
+                        return dispatch(
+                            showBanner({
+                                apiErrorResponse:
+                                    addToCartErr.response?.data.message,
+                            })
+                        );
                     });
             })
             .catch((err) => {
-                console.log(err.response.data);
+                return dispatch(
+                    showBanner({ apiErrorResponse: err.response?.data.message })
+                );
             });
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/materialreceipt/get/qty/by/product/id/${_id}`, {
-            headers: {
-                authorization: window.localStorage.getItem('bearer'),
-            }
-        })
-        .then((totalResp)=> {
-            setTotalQuantities(totalResp.data.totalQuantities);
-        }).catch((err) => {
-            console.log(err);
-        })
+        axios
+            .get(
+                `http://localhost:8080/materialreceipt/get/qty/by/product/id/${_id}`,
+                {
+                    headers: {
+                        authorization: window.localStorage.getItem("bearer"),
+                    },
+                }
+            )
+            .then((totalResp) => {
+                setTotalQuantities(totalResp.data.totalQuantities);
+            })
+            .catch((err) => {
+                return dispatch(
+                    showBanner({ apiErrorResponse: err.response?.data.message })
+                );
+            });
     }, []);
 
     return (
@@ -89,7 +105,9 @@ const Productcard = (props) => {
                     />
                     <h3 className="my-2">{name}</h3>
                     <h5 className="text-success">Price: ₹{price}/-</h5>
-                    <h5><b>Only {totalQuantities} left</b></h5>
+                    <h5>
+                        <b>Only {totalQuantities} left</b>
+                    </h5>
                     <p
                         style={{
                             textAlign: "justify",
@@ -99,8 +117,12 @@ const Productcard = (props) => {
                     >
                         {description}
                     </p>
-                    {/* <p className="text-start m-0">Stock Available: {totalQuantities}</p> */}
-                    <Button color="warning" handleClick={handleAddToCart} disabled={totalQuantities === 0}>
+
+                    <Button
+                        color="warning"
+                        handleClick={handleAddToCart}
+                        disabled={totalQuantities === 0}
+                    >
                         <strong>Add to Cart</strong>
                     </Button>
                 </Card>
