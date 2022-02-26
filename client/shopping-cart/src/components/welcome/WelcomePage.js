@@ -1,5 +1,4 @@
 import React from "react";
-import MyOrders from "../orders/MyOrders";
 
 const WelcomePage = () => {
     return (
@@ -15,9 +14,6 @@ const WelcomePage = () => {
                         having total of 60 warehouses all over the country.
                     </p>
                 </div>
-                
-            </div>
-            <div className="row m-0">
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
@@ -11,20 +11,15 @@ const Productlist = (props) => {
     const [products, setProducts] = useState([]);
     const [editIndex, setEditIndex] = useState(-1);
     const [editValues, setEditValues] = useState({});
-
-    // const [filterValue, setFilterValue] = useState('');
-
     const [productQuantities, setProductQuantities] = useState({});
-
     const [filteredProducts, setFilteredProducts] = useState([]);
 
     // Edit fields validation
     const [editErrors, setEditErrors] = useState({});
     const [hasErrors, setHasErrors] = useState(false);
 
-    const dispath = useDispatch();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const userState = useSelector((state) => state.user.user);
 
     const loadProducts = () => {
         axios
@@ -54,12 +49,17 @@ const Productlist = (props) => {
                             setProductQuantities({ ...temp });
                         })
                         .catch((qtyErr) => {
-                            console.log("Quantity Loading err", qtyErr);
+                            return dispatch(
+                                showBanner({
+                                    apiErrorResponse:
+                                        qtyErr.response?.data.message,
+                                })
+                            );
                         });
                 });
             })
             .catch((err) => {
-                dispath(
+                dispatch(
                     showBanner({ apiErrorResponse: err.response.data.message })
                 );
                 return navigate("/home");
@@ -67,10 +67,6 @@ const Productlist = (props) => {
     };
 
     useEffect(() => {
-        // if(!userState?.isAdmin){
-        //     dispath(showBanner({apiErrorResponse: "Unauthorized user"}));
-        //     return navigate('/home')
-        // }
         loadProducts();
     }, []);
 
@@ -107,7 +103,7 @@ const Productlist = (props) => {
     };
 
     const handleEditSave = () => {
-        const { _id, name, description, price, quantity, status } = editValues;
+        const { name, description, price, quantity, status } = editValues;
         setEditIndex(-1);
 
         axios
@@ -127,11 +123,12 @@ const Productlist = (props) => {
                 }
             )
             .then((updateResp) => {
-                console.log(updateResp.data);
                 loadProducts();
             })
             .catch((err) => {
-                console.log(err.response.data);
+                return dispatch(
+                    showBanner({ apiErrorResponse: err.response?.data.message })
+                );
             });
     };
 
@@ -151,11 +148,14 @@ const Productlist = (props) => {
                     }
                 )
                 .then((deleteResp) => {
-                    console.log(deleteResp.data);
                     loadProducts();
                 })
                 .catch((err) => {
-                    console.log(err.response.data);
+                    return dispatch(
+                        showBanner({
+                            apiErrorResponse: err.response?.data.message,
+                        })
+                    );
                 });
         }
     };
@@ -198,7 +198,6 @@ const Productlist = (props) => {
             </div>
             <div className="row m-0 mt-3">
                 <div className="col-md-12">
-                    {/* <h2 className='my-3'>Products</h2> */}
                     <table className="table tables-striped">
                         <thead className="table-dark">
                             <tr>

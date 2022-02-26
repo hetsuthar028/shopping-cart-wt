@@ -67,9 +67,15 @@ exports.authLogin = (req, res) => {
             .get(`http://localhost:8080/user/get/id/${email}`)
             .then((userResult) => {
                 console.log(userResult.data.user?.password);
-                if(userResult.data.user?.status === false){
-                    return res.status(401).send({success: false, message: "Your account is deactived. Kindly contact Customer support."});
+
+                if (userResult.data.user?.status === false) {
+                    return res.status(401).send({
+                        success: false,
+                        message:
+                            "Your account is deactived. Kindly contact Customer support.",
+                    });
                 }
+
                 if (password === userResult.data.user?.password) {
                     let user = userResult.data.user;
                     let userToken = jwt.sign(
@@ -95,7 +101,6 @@ exports.authLogin = (req, res) => {
                 }
             })
             .catch((err) => {
-                console.log("Error in fetching user @authLogin", err);
                 return res.status(500).send({
                     success: false,
                     message: "Invalid credentials",
@@ -113,7 +118,6 @@ exports.authVerify = (req, res) => {
         jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
         return res.status(200).send({ success: true, message: "verified" });
     } catch (e) {
-        console.log("Invalid");
         return res
             .status(401)
             .send({ success: false, message: "not verified" });
@@ -121,7 +125,6 @@ exports.authVerify = (req, res) => {
 };
 
 exports.getUseByEmail = (req, res) => {
-
     UserSchema.findOne({ email: req.params.email })
         .then((findResult) => {
             return res.status(200).send({ success: true, user: findResult });
@@ -184,6 +187,7 @@ exports.deleteUser = (req, res) => {
 exports.getCurrentUser = (req, res) => {
     let userToken = req.headers.authorization;
     let decodedData = jwt.decode(userToken);
+
     axios
         .get(`http://localhost:8080/user/get/id/${decodedData.email}`, {
             headers: {
@@ -191,11 +195,14 @@ exports.getCurrentUser = (req, res) => {
             },
         })
         .then((userResp) => {
-            console.log("USER", userResp.data)
-            if(userResp.data.user === null){
-                return res.status(400).send({success: false, message: "Invalid user"});
+            if (userResp.data.user === null) {
+                return res
+                    .status(400)
+                    .send({ success: false, message: "Invalid user" });
             }
-            return res.status(200).send({ success: true, user: userResp.data.user });
+            return res
+                .status(200)
+                .send({ success: true, user: userResp.data.user });
         })
         .catch((err) => {
             return res

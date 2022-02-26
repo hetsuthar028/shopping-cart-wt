@@ -29,7 +29,7 @@ const SignUp = (props) => {
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        console.log(values);
+
         axios
             .post("http://localhost:8080/user/auth/signup", {
                 email: values.email,
@@ -39,22 +39,24 @@ const SignUp = (props) => {
                 username: values.username,
             })
             .then((signupResp) => {
-                console.log(signupResp.data.success);
                 dispatch(
                     showBanner({
                         apiSuccessResponse: "Account created successfully!",
                     })
                 );
+
+                // If path contains admin then redirect to the admin users list page
                 if (location.pathname.toString().indexOf("admin") > -1) {
                     return navigate("/admin/users");
                 }
+
+                // Else this has to be the Sign up page and redirect to the Login
                 return navigate("/auth/login");
             })
             .catch((err) => {
-                dispatch(
+                return dispatch(
                     showBanner({ apiErrorResponse: err.response.data.message })
                 );
-                console.log(err.response.data.message);
             });
     };
 

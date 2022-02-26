@@ -19,8 +19,6 @@ exports.purchase = (req, res) => {
             contact: parseInt(contact),
         });
 
-        console.log("Products", products);
-
         products.map((product, idx) => {
             axios
                 .put(
@@ -59,36 +57,6 @@ exports.purchase = (req, res) => {
                                             result: saveResult,
                                             message: "Order successful!",
                                         });
-                                        // products.map((product, idx) => {
-                                        //     axios.put(`http://localhost:8080/materialreceipt/update/qty/product/id/${product.productId}`, {
-                                        //         "decreaseQuantity": product.buyQuantity
-                                        //     }, {
-                                        //         headers: {
-                                        //             authorization: req.headers.authorization,
-                                        //         }
-                                        //     }).then((updateResp) => {
-                                        //         console.log(updateResp);
-                                        //         if(products.length -1 === idx){
-
-                                        //         }
-                                        //     })
-                                        // })
-
-                                        // products.map((product, idx) => {
-                                        //     axios.put(`http://localhost:8080/materialreceipt/update/qty/product/id/${product.productId}`, {
-                                        //         "decreaseQuantity": product.buyQuantity
-                                        //     }, {
-                                        //         headers: {
-                                        //             authorization: req.headers.authorization,
-                                        //         }
-                                        //     }).then((resp) => {
-                                        //         console.log(resp);
-                                        //         if(products.length -1 === idx){
-                                        //             return res.send({success: true, result: saveResult, message: "Order successful!"});
-                                        //         }
-                                        //     })
-                                        // })
-                                        //
                                     })
                                     .catch((deleteErr) => {
                                         console.log(deleteErr.response.data);
@@ -172,10 +140,8 @@ exports.getAllOrders = (req, res) => {
             let items = ordersResp;
 
             let temp2 = [];
-            // console.log("FINAL", ordersResp.length);
 
             ordersResp.map((order, idx) => {
-                // console.log("Order", order);
                 let products = [];
                 order.products.map((pds, idx2) => {
                     axios
@@ -188,10 +154,9 @@ exports.getAllOrders = (req, res) => {
                             }
                         )
                         .then((resp) => {
-                            // console.log("Product", resp.data.product)
                             products.push(resp.data.product);
+
                             if (products.length === order.products.length) {
-                                // console.log("Done", products);
                                 temp2.push({ order, products: products });
                                 console.log("Final", temp2);
                                 if (temp2.length === ordersResp.length) {
@@ -206,29 +171,6 @@ exports.getAllOrders = (req, res) => {
                         });
                 });
             });
-            // items.map((item, idx) => {
-            //     // console.log(idx, item.products);
-            //     let tempArr = [];
-            //     item.products.map((item2) => {
-            //         axios.get(`http://localhost:8080/product/get/id/${item2.productId}`, {
-            //             headers: {
-            //                 authorization: req.headers.authorization
-            //             }
-            //         }).then((resp) => {
-            //             // console.log(resp.data)
-            //             tempArr.push({...resp.data, buyQuantity: item2.buyQuantity});
-            //             // tempArr.push({[resp.data.product._id]: {...resp.data, buyQuantity: item2.buyQuantity}});
-            //             if(tempArr.length === items.length){
-            //                 console.log("Data", tempArr);
-            //                 // return tempArr;
-            //                 temp2.push({...item, tempArr});
-            //             }
-            //         })
-            //     });
-            // })
-            // console.log(tempArr);
-            // console.log("Products", products[0].products)
-            // return res.status(200).send({success: true, orders: ordersResp});
         })
         .catch((err) => {
             return res

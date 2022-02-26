@@ -3,6 +3,7 @@ const axios = require("axios");
 
 exports.addItem = (req, res) => {
     let { productId, userId, buyQuantity } = req.body;
+    
     if (productId && userId && buyQuantity) {
         // Check if the userId and productId exists before adding to cart
         let newCartItem = new CartSchema({
@@ -49,6 +50,7 @@ exports.addItem = (req, res) => {
 
 exports.getCartItemsByUserId = (req, res) => {
     let userId = req.params.userId;
+    
     if (userId) {
         CartSchema.find({ userId: userId })
             .then((findResult) => {
@@ -67,6 +69,7 @@ exports.getCartItemsByUserId = (req, res) => {
 
 exports.deleteItemById = (req, res) => {
     let cartItemId = req.params.itemId;
+    
     if (cartItemId) {
         CartSchema.findByIdAndDelete(cartItemId)
             .then((findResult) => {
@@ -85,6 +88,7 @@ exports.deleteItemById = (req, res) => {
 
 exports.emptyCart = (req, res) => {
     let userId = req.params.userId;
+    
     if (userId) {
         CartSchema.deleteMany({ userId: userId })
             .then((deleteResp) => {
@@ -107,13 +111,13 @@ exports.emptyCart = (req, res) => {
 exports.updateQuantity = (req, res) => {
     const cartId = req.params.cartId;
     const buyQuantity = req.body.buyQuantity;
-    console.log("Cart", cartId, buyQuantity)
+
     if (cartId && buyQuantity > 0) {
         CartSchema.updateOne(
             {
                 _id: cartId,
             },
-            { $set: { "buyQuantity": buyQuantity } }
+            { $set: { buyQuantity: buyQuantity } }
         )
             .then((updateOneResp) => {
                 return res

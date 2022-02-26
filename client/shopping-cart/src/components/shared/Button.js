@@ -1,7 +1,13 @@
 import React from "react";
 
 const Button = (props) => {
-    const { type, handleClick = () => {}, color = "primary", disabled = false, style } = props;
+    const {
+        type,
+        handleClick = () => {},
+        color = "primary",
+        disabled = false,
+        style,
+    } = props;
     return (
         <button
             type={type}

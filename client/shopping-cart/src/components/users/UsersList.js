@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
 import { useDispatch } from "react-redux";
-import { showBanner } from '../../redux';
+import { showBanner } from "../../redux";
 import FormHelperText from "../shared/FormHelperText";
 
 const UsersList = () => {
@@ -33,27 +33,28 @@ const UsersList = () => {
                 setFilteredUsers(getResponse.data.users);
             })
             .catch((err) => {
-                dispatch(showBanner({apiErrorResponse: err.response.data.message}));
-                if(err.response.status === 403){
-                    return navigate('/home');
+                dispatch(
+                    showBanner({ apiErrorResponse: err.response.data.message })
+                );
+                if (err.response.status === 403) {
+                    return navigate("/home");
                 }
-                return navigate('/auth/login');
+                return navigate("/auth/login");
             });
     };
 
     const validateForm = (name, value) => {
-        if(name === "username" && value.length <= 5){
+        if (name === "username" && value.length <= 5) {
             setHasErrors(true);
             return "Invalid username";
         }
-        if(name === "password" && value.length <= 8){
+        if (name === "password" && value.length <= 8) {
             setHasErrors(true);
             return "Password must be greater than 8 character";
-        }
-        else {
+        } else {
             setHasErrors(false);
         }
-    }
+    };
 
     useEffect(() => {
         loadUsers();
@@ -70,7 +71,7 @@ const UsersList = () => {
         setEditErrors({
             ...editErrors,
             [name]: validateForm(name, value),
-        })
+        });
     };
 
     const handleEditClick = (item, idx) => {
@@ -79,7 +80,7 @@ const UsersList = () => {
     };
 
     const handleEditSave = () => {
-        let { _id, username, email, password, status, isAdmin } = editValues;
+        let { username, email, password, status, isAdmin } = editValues;
 
         axios
             .put(
@@ -96,48 +97,70 @@ const UsersList = () => {
                 }
             )
             .then((updateResp) => {
-                console.log(updateResp.data);
                 setEditIndex(-1);
                 loadUsers();
             })
             .catch((err) => {
-                console.log(err.response.data);
+                return dispatch(
+                    showBanner({
+                        apiErrorResponse: err.response?.data?.message,
+                    })
+                );
             });
     };
 
     const handleUserDelete = (userEmail) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this user?");
-        if(confirmDelete){
-            axios.delete(`http://localhost:8080/user/delete/${userEmail}`, {
-                headers: {
-                    authorization: window.localStorage.getItem('bearer'),
-                }
-            })
-            .then((deleteResp) => {
-                console.log(deleteResp.data);
-                loadUsers();
-            })
-            .catch((err) => {
-                console.log(err.response.data);
-            });
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this user?"
+        );
+
+        if (confirmDelete) {
+            axios
+                .delete(`http://localhost:8080/user/delete/${userEmail}`, {
+                    headers: {
+                        authorization: window.localStorage.getItem("bearer"),
+                    },
+                })
+                .then((deleteResp) => {
+                    loadUsers();
+                })
+                .catch((err) => {
+                    return dispatch(
+                        showBanner({
+                            apiErrorResponse: err.response?.data.message,
+                        })
+                    );
+                });
         }
-    }
+    };
 
     const performUsersFilter = (e) => {
         const filterQuery = e.target.value.toString().toLowerCase();
-        setFilteredUsers(allUsers.filter((user) => {
-            if(user.email.toString().toLowerCase().indexOf(filterQuery) > -1){
-                return true;
-            }
-        }))
-    }
+
+        setFilteredUsers(
+            allUsers.filter((user) => {
+                if (
+                    user.email.toString().toLowerCase().indexOf(filterQuery) >
+                    -1
+                ) {
+                    return true;
+                }
+            })
+        );
+    };
 
     return (
         <div>
             <div className="row m-0">
-                <div className="col-md-12" style={{display: "flex", justifyContent: "space-between"}}>
+                <div
+                    className="col-md-12"
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                >
                     <div className="text-start">
-                        <Input handleChange={performUsersFilter} placeholder="Search users by email address" />
+                        <Input
+                            handleChange={performUsersFilter}
+                            placeholder="Search users by email address"
+                        />
                     </div>
                     <div className="text-end">
                         <Link to="/admin/users/add">
@@ -164,14 +187,19 @@ const UsersList = () => {
                         <tbody>
                             {filteredUsers.map((user, idx) => {
                                 return idx === editIndex ? (
-                                    <tr key={idx} className="bg-secondary text-white">
+                                    <tr
+                                        key={idx}
+                                        className="bg-secondary text-white"
+                                    >
                                         <td>
                                             <Input
                                                 name="username"
                                                 value={editValues.username}
                                                 handleChange={handleInputChange}
                                             />
-                                            <FormHelperText color="white">{editErrors.username}</FormHelperText>
+                                            <FormHelperText color="white">
+                                                {editErrors.username}
+                                            </FormHelperText>
                                         </td>
                                         <td>{editValues.email}</td>
                                         <td>
@@ -180,13 +208,20 @@ const UsersList = () => {
                                                 value={editValues.password}
                                                 handleChange={handleInputChange}
                                             />
-                                            <FormHelperText color="white">{editErrors.password}</FormHelperText>
+                                            <FormHelperText color="white">
+                                                {editErrors.password}
+                                            </FormHelperText>
                                         </td>
                                         <td>
                                             <Input
                                                 type="checkbox"
                                                 checked={editValues.status}
-                                                handleChange={() => setEditValues({...editValues, status: !editValues.status})}
+                                                handleChange={() =>
+                                                    setEditValues({
+                                                        ...editValues,
+                                                        status: !editValues.status,
+                                                    })
+                                                }
                                             />
                                         </td>
                                         <td>No</td>
@@ -213,7 +248,16 @@ const UsersList = () => {
                                             </div>
                                         </td>
                                         <td>
-                                            <Button color="warning" handleClick={() => handleUserDelete(editValues.email)}>❌</Button>
+                                            <Button
+                                                color="warning"
+                                                handleClick={() =>
+                                                    handleUserDelete(
+                                                        editValues.email
+                                                    )
+                                                }
+                                            >
+                                                ❌
+                                            </Button>
                                         </td>
                                     </tr>
                                 ) : (
@@ -239,7 +283,14 @@ const UsersList = () => {
                                             </Button>
                                         </td>
                                         <td>
-                                            <Button color="warning" handleClick={() => handleUserDelete(user.email)}>❌</Button>
+                                            <Button
+                                                color="warning"
+                                                handleClick={() =>
+                                                    handleUserDelete(user.email)
+                                                }
+                                            >
+                                                ❌
+                                            </Button>
                                         </td>
                                     </tr>
                                 );

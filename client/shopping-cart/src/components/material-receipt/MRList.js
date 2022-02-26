@@ -6,7 +6,7 @@ import Card from "../shared/Card";
 import Input from "../shared/Input";
 import dummyImage from "../../static/receipt-76-454913.png";
 import { useDispatch } from "react-redux";
-import { showBanner } from '../../redux';
+import { showBanner } from "../../redux";
 
 const MRList = () => {
     const [materialReceipts, setMaterialReceipts] = useState([]);
@@ -23,35 +23,51 @@ const MRList = () => {
                 },
             })
             .then((resp) => {
-                console.log(resp.data.result);
                 setMaterialReceipts(resp.data.result);
                 setFilteredMRs(resp.data.result);
             })
             .catch((err) => {
-                console.log(err.response.data);
-                dispatch(showBanner({apiErrorResponse: err.response?.data.message}));
-                if(err.response.status === 403){
-                    return navigate('/home');
+                dispatch(
+                    showBanner({ apiErrorResponse: err.response?.data.message })
+                );
+                if (err.response.status === 403) {
+                    return navigate("/home");
                 }
-                return navigate('/auth/login');
+                return navigate("/auth/login");
             });
     }, []);
 
     const performMRFilter = (e) => {
         let filterQuery = e.target.value.toString().toLowerCase();
-        setFilteredMRs(materialReceipts.filter((receipt) => {
-            if((receipt.supplier.toString().toLowerCase().indexOf(filterQuery) > -1) || (receipt.mrNo.toString().toLowerCase().indexOf(filterQuery) > -1)){
-                return true;
-            }
-        }))
-    }
+
+        setFilteredMRs(
+            materialReceipts.filter((receipt) => {
+                if (
+                    receipt.supplier
+                        .toString()
+                        .toLowerCase()
+                        .indexOf(filterQuery) > -1 ||
+                    receipt.mrNo.toString().toLowerCase().indexOf(filterQuery) >
+                        -1
+                ) {
+                    return true;
+                }
+            })
+        );
+    };
 
     return (
         <div>
             <div className="row m-0">
-                <div className="col-md-12" style={{display: 'flex', justifyContent: 'space-between'}}>
+                <div
+                    className="col-md-12"
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                >
                     <div className="text-start">
-                        <Input placeholder="Search by supplier or number" handleChange={performMRFilter} />
+                        <Input
+                            placeholder="Search by supplier or number"
+                            handleChange={performMRFilter}
+                        />
                     </div>
                     <div className="text-end">
                         <Link to="/admin/mr/add">
@@ -102,30 +118,32 @@ const MRList = () => {
                                     </div>
                                     <div className="mt-2">
                                         Products:{" "}
-                                        <h6 style={{ display: "inline" }}>{
-                                            mr.products.length
-                                        }</h6>{" "}
+                                        <h6 style={{ display: "inline" }}>
+                                            {mr.products.length}
+                                        </h6>{" "}
                                     </div>
                                     <div className="mt-2">
                                         Total Amount:{" "}
-                                        <h6 style={{ display: "inline" }}>₹{
-                                            mr.totalAmount
-                                        }</h6>{" "}
+                                        <h6 style={{ display: "inline" }}>
+                                            ₹{mr.totalAmount}
+                                        </h6>{" "}
                                     </div>
                                 </div>
                             </Card>
                         </div>
                     ))}
-                    {
-                        materialReceipts.length === 0 && (
-                            <div>
-                            <h4>Looks like you haven't purchased anything yet!</h4>
+                    {materialReceipts.length === 0 && (
+                        <div>
+                            <h4>
+                                Looks like you haven't purchased anything yet!
+                            </h4>
                             <Link to="/admin/mr/add">
-                            <Button>Purchase products for our platform</Button>
+                                <Button>
+                                    Purchase products for our platform
+                                </Button>
                             </Link>
-                            </div>
-                        )
-                    }
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

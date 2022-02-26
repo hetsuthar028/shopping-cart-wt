@@ -1,14 +1,18 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import OrderCard from "./OrderCard";
 import { Link } from "react-router-dom";
 import Button from "../shared/Button";
+import { useDispatch } from "react-redux";
+import { showBanner } from "../../redux";
 
 const MyOrders = () => {
     const [myOrders, setMyOrders] = useState([]);
+    const dispatch = useDispatch();
 
     useEffect(() => {
+        
+        // Get current user details
         axios
             .get("http://localhost:8080/user/get/currentuser", {
                 headers: {
@@ -17,6 +21,8 @@ const MyOrders = () => {
             })
             .then((currentUserResp) => {
                 let userId = currentUserResp.data.user._id;
+
+                // Get users orders
                 axios
                     .get(`http://localhost:8080/order/get/id/${userId}`, {
                         headers: {
@@ -25,15 +31,22 @@ const MyOrders = () => {
                         },
                     })
                     .then((ordersResp) => {
-                        console.log("Data", ordersResp);
                         setMyOrders(ordersResp.data.orders);
                     })
                     .catch((err) => {
-                        console.log("ERROR in Getting orders", err.response);
+                        return dispatch(
+                            showBanner({
+                                apiErrorResponse: err.response?.data?.message,
+                            })
+                        );
                     });
             })
             .catch((err2) => {
-                console.log("ERR2", err2);
+                return dispatch(
+                    showBanner({
+                        apiErrorResponse: err2.response?.data?.message,
+                    })
+                );
             });
     }, []);
 
