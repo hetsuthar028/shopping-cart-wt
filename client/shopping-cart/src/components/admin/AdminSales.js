@@ -41,7 +41,7 @@ const AdminSales = () => {
                 setFilteredOrders(ordersResp.data.orders);
             })
             .catch((err) => {
-                console.log("ERROR in Getting orders", err.response);
+                console.log("ERROR in Getting orders", err);
             })
         }).catch((err2) => {
             console.log("ERR2", err2);

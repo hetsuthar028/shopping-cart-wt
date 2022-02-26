@@ -77,6 +77,12 @@ const MaterialReceipt = () => {
         }
     }
 
+    const getGrandTotal = () => {
+        return materialReceipt.products?.reduce((prev, product) => {
+            return prev += product.totalAmt;
+        }, 0);
+    }
+
     return (
         <div>
             <div className="col-md-11 m-auto">
@@ -162,7 +168,7 @@ const MaterialReceipt = () => {
                                 <tbody>
                                     {materialReceipt.products?.map((product, idx) => (
                                         <tr key={idx}>
-                                            <td>{product.productId.name}</td>
+                                            <td>{product?.productId?.name}</td>
                                             <td>{product.quantity}</td>
                                             <td>{product.rate}</td>
                                             <td>{product.totalAmt}</td>
@@ -170,6 +176,9 @@ const MaterialReceipt = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="row m-0 mt-3">
+                            <h3>Grand Total: ₹{getGrandTotal()}</h3>
                         </div>
                         {/* <div className="row m-0 mt-3">
                             <div className="col-md-12 m-auto">

@@ -106,10 +106,26 @@ const MRList = () => {
                                             mr.products.length
                                         }</h6>{" "}
                                     </div>
+                                    <div className="mt-2">
+                                        Total Amount:{" "}
+                                        <h6 style={{ display: "inline" }}>₹{
+                                            mr.totalAmount
+                                        }</h6>{" "}
+                                    </div>
                                 </div>
                             </Card>
                         </div>
                     ))}
+                    {
+                        materialReceipts.length === 0 && (
+                            <div>
+                            <h4>Looks like you haven't purchased anything yet!</h4>
+                            <Link to="/admin/mr/add">
+                            <Button>Purchase products for our platform</Button>
+                            </Link>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         </div>

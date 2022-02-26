@@ -69,7 +69,7 @@ const AddMR = () => {
                     rate: product.rate,
                     totalAmt: product.totalAmt,
                     _id: product._id,
-                    productId: product.productId._id
+                    productId: product?.productId?._id
 
                 }
             )))
@@ -244,10 +244,17 @@ const AddMR = () => {
         tempValues[idx] = {
             ...tempValues[idx],
             "productId": value,
-            "rate": products.filter((product) => product._id == value)[0].price
+            "rate": products.filter((product) => product._id == value)[0].price,
+            "totalAmt": parseFloat(products.filter((product) => product._id == value)[0].price) * tempValues[idx].quantity,
         }
 
         setProductValues([...tempValues]);
+    }
+
+    const getGrandTotal = () => {
+        return productValues?.reduce((prev, product) => {
+            return prev += product.totalAmt ?? 0;
+        }, 0);
     }
 
     return (
@@ -340,12 +347,12 @@ const AddMR = () => {
                                                             (product, idx) => (
                                                                 <option
                                                                     value={
-                                                                        product._id
+                                                                        product?._id
                                                                     }
                                                                     key={idx}
                                                                 >
                                                                     {
-                                                                        product.name
+                                                                        product?.name
                                                                     }
                                                                 </option>
                                                             )
@@ -461,6 +468,9 @@ const AddMR = () => {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="row m-0 mt-3">
+                            <h3>Grand Total: ₹{getGrandTotal()}</h3>
                         </div>
                         <div className="row m-0 mt-3">
                             <div className="col-md-12 m-auto">
